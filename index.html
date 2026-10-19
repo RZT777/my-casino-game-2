@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Casino Phone</title>
+<title>Симулятор Механика: Полная версия</title>
 <style>
   :root {
     --bg-main: #0a0e14;
@@ -17,6 +17,7 @@
     --success: #4caf50;
     --border: #232936;
     --icon-bg: #1e2c24;
+    --love-accent: #ff6b6b;
   }
   
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
@@ -28,44 +29,42 @@
   }
 
   .phone {
-    width: 100%; max-width: 420px; height: 100vh;
+    width: 100%; max-width: 480px; height: 100vh;
     background: var(--bg-main);
     position: relative; display: flex; flex-direction: column; overflow: hidden;
     box-shadow: 0 0 50px rgba(0,0,0,1);
-    transition: background 0.5s;
   }
 
   .status-bar { display: flex; justify-content: space-between; padding: 12px 20px; font-size: 14px; font-weight: bold; color: #fff; z-index: 100; }
-
   .screen-area { flex: 1; position: relative; overflow: hidden; display: flex; flex-direction: column; }
 
   /* Рабочий стол */
-  .home-screen {
-    flex: 1; padding: 20px; display: grid;
-    grid-template-columns: repeat(4, 1fr); gap: 15px; align-content: start;
-    overflow-y: auto;
-  }
-  
-  .app-icon { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.1s; }
+  .home-screen { flex: 1; padding: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; align-content: start; overflow-y: auto; }
+  .app-icon { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.1s; position: relative;}
   .app-icon:active { transform: scale(0.9); }
-  
-  .icon-box {
-    width: 60px; height: 60px; border-radius: 16px; background: var(--icon-bg);
-    display: flex; align-items: center; justify-content: center; font-size: 30px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05);
-    backdrop-filter: blur(5px);
-  }
+  .icon-box { width: 60px; height: 60px; border-radius: 16px; background: var(--icon-bg); display: flex; align-items: center; justify-content: center; font-size: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(5px); position: relative;}
   .app-icon span { font-size: 11px; text-align: center; color: #fff; text-shadow: 0 1px 2px #000; line-height: 1.2;}
   
+  /* Значок уведомления */
+  .badge {
+    position: absolute; top: -5px; right: -5px; background: var(--danger); color: white;
+    font-size: 12px; font-weight: bold; width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg-main);
+    display: none;
+  }
+
   /* Цвета иконок */
-  .icon-guess { background: linear-gradient(135deg, #3498db, #2980b9); }
-  .icon-roulette { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-  .icon-slots { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
-  .icon-mines { background: linear-gradient(135deg, #34495e, #2c3e50); }
+  .icon-casino { background: linear-gradient(135deg, #e74c3c, #8e44ad); }
   .icon-mechanic { background: linear-gradient(135deg, #f39c12, #d35400); }
   .icon-bank { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-  .icon-tetris { background: linear-gradient(135deg, #f1c40f, #f39c12); }
-  .icon-race { background: linear-gradient(135deg, #3498db, #9b59b6); }
+  .icon-shop { background: linear-gradient(135deg, #e67e22, #d35400); }
+  .icon-cars { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+  .icon-realestate { background: linear-gradient(135deg, #2ecc71, #16a085); }
+  .icon-sleep { background: linear-gradient(135deg, #2c3e50, #1a252f); }
+  .icon-messages { background: linear-gradient(135deg, #3498db, #2980b9); }
+  .icon-garage { background: linear-gradient(135deg, #7f8c8d, #2c3e50); }
+  .icon-darknet { background: linear-gradient(135deg, #4a148c, #1a1a1a); border: 1px solid #8e44ad; }
+  .icon-relations { background: linear-gradient(135deg, #ff6b6b, #c0392b); }
 
   .app-screen {
     position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -75,48 +74,140 @@
   }
   .app-screen.active { transform: translateX(0); }
 
-  .app-header { display: flex; align-items: center; padding: 12px 16px; background: var(--bg-panel); border-bottom: 1px solid var(--border); }
+  .app-header { display: flex; align-items: center; padding: 12px 16px; background: var(--bg-panel); border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .back-btn { background: transparent; border: none; color: var(--accent); font-size: 16px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
   .app-title { flex: 1; text-align: center; font-weight: bold; font-size: 18px; color: #fff; padding-right: 50px; }
-  .balance-bar { padding: 10px 16px; background: rgba(0,0,0,0.3); display: flex; justify-content: center; font-size: 15px; font-weight: bold; color: var(--accent); border-bottom: 1px solid var(--border); }
+  .balance-bar { padding: 10px 16px; background: rgba(0,0,0,0.3); display: flex; justify-content: space-between; font-size: 15px; font-weight: bold; color: var(--accent); border-bottom: 1px solid var(--border); flex-shrink: 0; }
   .app-content { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; }
 
-  /* ===== ИГРЫ ===== */
+  /* ===== ОТНОШЕНИЯ ===== */
+  .npc-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px; padding: 15px; margin-bottom: 15px; }
+  .npc-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
+  .npc-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--love-accent); display: flex; align-items: center; justify-content: center; font-size: 30px; color: #fff; }
+  .npc-info h3 { color: #fff; margin-bottom: 4px; }
+  .npc-info p { font-size: 12px; color: var(--text-muted); }
   
-  /* Тетрис */
-  .tetris-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; }
-  .tetris-stats { width: 100%; display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; font-size: 14px;}
-  .tetris-stats div { color: var(--accent); }
-  #tetrisCanvas { background: #000; border: 2px solid var(--border); border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.8); }
-  .tetris-controls { display: flex; gap: 8px; margin-top: 15px; width: 100%; justify-content: center;}
-  .tetris-btn { background: var(--bg-panel); border: 1px solid var(--border); color: white; padding: 15px 20px; border-radius: 10px; font-size: 20px; cursor: pointer; }
+  .progress-bar { width: 100%; height: 10px; background: var(--bg-main); border-radius: 5px; margin: 10px 0; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+  
+  .npc-actions { display: flex; gap: 8px; }
+  .npc-actions button { flex: 1; padding: 10px; font-size: 13px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+  .npc-btn-talk { background: var(--border); color: #fff; }
+  .npc-btn-gift { background: var(--accent); color: #000; }
+  .npc-btn-gift:disabled { background: #555; color: #999; }
 
-  /* Гонки */
-  .race-wrapper { flex: 1; display: flex; flex-direction: column; position: relative; padding: 0 !important; }
-  #raceCanvas { width: 100%; height: 100%; border-radius: 0; background: #87CEEB; display: block; }
-  .race-controls { position: absolute; bottom: 20px; left: 0; right: 0; display: flex; justify-content: space-between; padding: 0 20px; pointer-events: none; }
-  .race-btn { background: rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.5); color: white; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; pointer-events: auto; backdrop-filter: blur(5px); }
-  .race-hud { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; color: white; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none; z-index: 10;}
-  .race-speed { background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
+  /* ===== БАНК ===== */
+  .finance-card { background: var(--bg-panel); border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .finance-card h3 { font-size: 18px; margin-bottom: 10px; color: var(--accent); }
+  
+  .loan-terms { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap;}
+  .loan-term-btn { flex: 1; min-width: 50px; background: var(--bg-cell); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px;}
+  .loan-term-btn.active { background: var(--accent); color: #000; border-color: var(--accent);}
 
-  /* Общие стили */
-  h2 { font-size: 20px; margin-bottom: 10px; color: var(--accent); text-align: center; }
-  p { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.4; text-align: center; }
-  input[type="number"], select { width: 100%; padding: 14px; font-size: 18px; text-align: center; border-radius: 10px; border: 2px solid var(--border); background: var(--bg-main); color: #fff; margin-bottom: 12px; outline: none; }
-  .btn { width: 100%; padding: 16px; font-size: 16px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; background: var(--accent); color: #000; transition: 0.2s; margin-top: 8px; }
-  .btn:disabled { background: #555; color: #999; cursor: not-allowed; }
-  .btn-secondary { background: var(--border); color: var(--text-main); }
-  .result { font-size: 16px; margin-top: 16px; min-height: 24px; font-weight: bold; text-align: center; }
-  .win { color: var(--success); }
-  .lose { color: var(--danger); }
+  .credit-levels { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .credit-level-btn { background: var(--bg-cell); border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; cursor: pointer; text-align: left; font-size: 15px; font-weight: bold; display: flex; justify-content: space-between; }
+  .credit-level-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .credit-level-btn span { color: var(--accent); }
 
-  /* Слоты */
-  .slots { display: flex; gap: 10px; justify-content: center; margin: 16px 0; }
-  .slot { width: 70px; height: 80px; background: var(--bg-main); border: 2px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 40px; transition: 0.1s; }
-  .slot.spin { animation: shake 0.1s infinite; }
-  @keyframes shake { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
+  .deposit-box { background: #1e2530; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+  .deposit-input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: #fff; margin-bottom: 10px; outline: none;}
 
-  /* Мины */
+  /* ===== ДАРКНЕТ ===== */
+  .darknet-tabs { display: flex; gap: 5px; margin-bottom: 15px; }
+  .darknet-tab { flex: 1; background: #1a1a1a; border: 1px solid #4a148c; color: #fff; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center;}
+  .darknet-tab.active { background: #4a148c; color: #fff; border-color: #8e44ad;}
+  .dark-item { background: #0f0f0f; border: 1px solid #4a148c; border-radius: 10px; padding: 15px; margin-bottom: 10px; }
+  .dark-title { color: #d500f9; font-weight: bold; margin-bottom: 5px; }
+  .dark-desc { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .dark-price { color: var(--accent); font-weight: bold; margin-bottom: 10px; }
+  .dark-btn { background: #4a148c; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%;}
+  .dark-btn:active { background: #6a1b9a; }
+
+  /* ===== КАЗИНО ===== */
+  .casino-tabs { display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap;}
+  .casino-tab { flex: 1; background: var(--bg-panel); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; min-width: 80px;}
+  .casino-tab.active { background: var(--accent); color: #000; border-color: var(--accent);}
+
+  /* ===== СООБЩЕНИЯ ===== */
+  .message-item { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-start; }
+  .message-avatar { width: 40px; height: 40px; border-radius: 50%; background: #e74c3c; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: #fff; flex-shrink: 0; }
+  .message-content { flex: 1; }
+  .message-sender { font-weight: bold; color: #fff; margin-bottom: 4px; font-size: 15px; }
+  .message-text { font-size: 14px; color: var(--text-muted); line-height: 1.4; }
+  .message-text span { color: var(--danger); font-weight: bold; }
+
+  /* ===== СИМУЛЯТОР ===== */
+  .life-stats { display: flex; justify-content: space-between; background: var(--bg-panel); padding: 10px; border-radius: 10px; margin-bottom: 16px; border: 1px solid var(--border); font-size: 13px;}
+  .life-stat span { color: var(--accent); font-weight: bold;}
+
+  .life-btn { width: 100%; padding: 15px; background: var(--accent); color: #000; font-size: 16px; font-weight: bold; border: none; border-radius: 10px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;}
+  .life-btn:active { background: var(--accent-hover); }
+  .life-btn:disabled { background: #555; color: #999; cursor: not-allowed; }
+  .life-btn-danger { background: var(--danger); color: #fff; }
+  .life-btn-success { background: var(--success); color: #fff; }
+  .life-btn-secondary { background: var(--border); color: #fff; }
+
+  .event-log { background: #000; border: 1px solid var(--border); border-radius: 10px; padding: 15px; min-height: 100px; margin-bottom: 16px; font-size: 14px; line-height: 1.5; color: #9ab8a4; }
+  .event-log p { margin-bottom: 5px; color: #fff;}
+
+  .client-order-box { background: #1e2530; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; text-align: left; }
+  .client-title { font-size: 14px; color: var(--accent); font-weight: bold; margin-bottom: 5px; }
+  .client-car { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
+  .client-symptoms { font-size: 15px; font-weight: bold; color: #fff; line-height: 1.4; }
+  
+  .engine-diagram { background: #2a323d; border-radius: 12px; padding: 10px; margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .engine-part { background: #3b4553; border-radius: 8px; padding: 10px 5px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+  .engine-part.active { border-color: var(--accent); background: #4a5666;}
+  .engine-part-icon { font-size: 24px; display: block; margin-bottom: 4px;}
+  .engine-part-name { font-size: 10px; color: #ddd; font-weight: bold;}
+
+  /* ===== МАГАЗИНЫ ===== */
+  .shop-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-panel); padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); flex-wrap: wrap;}
+  .shop-item-info { text-align: left; flex: 1; }
+  .shop-item-title { font-weight: bold; font-size: 14px; color: #fff; margin-bottom: 4px;}
+  .shop-item-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 5px;}
+  .shop-item-price { font-weight: bold; color: var(--accent); font-size: 14px;}
+  .buy-btn { background: var(--accent); color: #000; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; margin-left: 10px;}
+  .buy-btn:disabled { background: #555; color: #999; }
+
+  /* Автосалон */
+  .car-tabs { display: flex; gap: 5px; margin-bottom: 15px; }
+  .car-tab { flex: 1; background: var(--bg-panel); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center;}
+  .car-tab.active { background: var(--accent); color: #000; border-color: var(--accent);}
+  .car-category { font-size: 12px; color: var(--accent); font-weight: bold; margin: 10px 0 5px 0; text-transform: uppercase; }
+
+  /* Недвижимость */
+  .realestate-tabs { display: flex; gap: 5px; margin-bottom: 15px; }
+  .realestate-tab { flex: 1; background: var(--bg-panel); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center;}
+  .realestate-tab.active { background: var(--accent); color: #000; border-color: var(--accent);}
+
+  /* ===== ИГРЫ ===== */
+  .roulette-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; }
+  .roulette-table { background: radial-gradient(circle at center, #1b5e20, #0a2a0a); border: 4px solid #5d4037; border-radius: 16px; padding: 10px; margin-bottom: 15px; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 400px; }
+  .wheel-wrapper { width: 120px; height: 120px; margin: 0 auto 10px auto; position: relative; flex-shrink: 0; }
+  #rouletteCanvas { width: 120px; height: 120px; display: block; border-radius: 50%; border: 4px solid #b8860b; box-shadow: 0 0 10px rgba(0,0,0,0.8); transition: transform 4s cubic-bezier(0.1, 0.8, 0.2, 1); transform: rotate(0deg); }
+  .wheel-pointer { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 16px solid var(--accent); z-index: 20; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8)); }
+  .wheel-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background: var(--bg-panel); border: 2px solid var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; color: var(--accent); z-index: 10; box-shadow: 0 0 10px rgba(0,0,0,0.8); }
+  .betting-grid { display: grid; grid-template-columns: 20px repeat(12, 1fr) 24px; grid-template-rows: repeat(3, 24px) 24px 24px; gap: 1px; font-size: 10px; background: #1b5e20; padding: 2px; border-radius: 4px; width: 100%; }
+  .cell { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; transition: 0.1s; position: relative; text-align: center; line-height: 1.1; overflow: hidden;}
+  .cell.red-num { background: #c0392b; }
+  .cell.black-num { background: #1a1a1a; }
+  .cell.green-num { background: #27ae60; }
+  .cell.outside { background: rgba(255,255,255,0.1); font-weight: bold; font-size: 9px;}
+  .chip-on-table { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px; border-radius: 50%; border: 1px dashed white; box-shadow: 0 1px 3px rgba(0,0,0,0.6); pointer-events: none; z-index: 5; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; font-weight: bold; }
+  .chip-selector { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+  .chip-btn { width: 36px; height: 36px; border-radius: 50%; border: 3px dashed #fff; font-size: 12px; font-weight: bold; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .chip-btn.active { transform: scale(1.15); border-style: solid; box-shadow: 0 0 10px var(--accent); }
+  .chip-1 { background: #e74c3c; }
+  .chip-5 { background: #8e44ad; }
+  .chip-10 { background: #2980b9; }
+  .exchange-box { display: flex; flex-direction: column; gap: 10px; align-items: center; background: var(--bg-cell); border: 1px solid var(--border); border-radius: 10px; padding: 15px; margin-bottom: 15px; width: 100%; max-width: 400px; }
+  .exchange-btns { display: flex; gap: 8px; width: 100%; }
+  .exchange-btns button { padding: 10px 5px; font-size: 12px; flex: 1; color: #fff; border: none; border-radius: 8px; cursor: pointer;}
+  .btn-red { background: #e74c3c; }
+  .btn-purple { background: #8e44ad; }
+  .btn-blue { background: #2980b9; }
+
   .mines-stats { display: flex; gap: 8px; margin-bottom: 16px; }
   .stat-box { flex: 1; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 10px 5px; text-align: center; }
   .stat-title { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
@@ -143,64 +234,28 @@
   .main-play-btn { width: 100%; padding: 18px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; }
   .cashout-btn { background: var(--success); color: #fff; margin-top: 10px; }
 
-  /* ===== НОВОЕ СТО ВАЗ ===== */
-  .client-order-box {
-    background: #1e2530; border: 1px solid var(--border); border-radius: 12px; padding: 16px;
-    margin-bottom: 16px; text-align: left;
-  }
-  .client-title { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
-  .client-symptoms { font-size: 16px; font-weight: bold; color: #fff; line-height: 1.5; }
-  
-  /* Схема мотора (визуализация) */
-  .engine-diagram {
-    background: #2a323d; border-radius: 12px; padding: 10px; margin-bottom: 16px;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-  }
-  .engine-part {
-    background: #3b4553; border-radius: 8px; padding: 15px 10px; text-align: center;
-    cursor: pointer; border: 2px solid transparent; transition: 0.2s; position: relative;
-  }
-  .engine-part:hover { border-color: rgba(255,255,255,0.2); }
-  .engine-part-icon { font-size: 32px; margin-bottom: 5px; display: block;}
-  .engine-part-name { font-size: 11px; color: #ddd; font-weight: bold;}
-  
-  .engine-part.broken { border-color: var(--danger); animation: pulse-red 1s infinite; }
-  .engine-part.fixed { border-color: var(--success); opacity: 0.5; pointer-events: none; }
-  .engine-part.active { border-color: var(--accent); background: #4a5666;}
-  @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 5px var(--danger); } 50% { box-shadow: 0 0 15px var(--danger); } }
+  .slots { display: flex; gap: 10px; justify-content: center; margin: 16px 0; }
+  .slot { width: 70px; height: 80px; background: var(--bg-main); border: 2px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 40px; transition: 0.1s; }
+  .slot.spin { animation: shake 0.1s infinite; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
 
-  .toolbox { display: flex; gap: 10px; margin-bottom: 16px; }
-  .tool-btn { flex: 1; padding: 12px; font-size: 14px; border-radius: 8px; background: var(--bg-panel); border: 1px solid var(--border); color: #fff; cursor: pointer; font-weight: bold;}
+  .tetris-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; width: 100%; }
+  .tetris-stats { width: 100%; max-width: 320px; display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; font-size: 14px;}
+  .tetris-stats div { color: var(--accent); }
+  #tetrisCanvas { background: #000; border: 2px solid var(--border); border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.8); width: 100%; max-width: 280px; height: auto; aspect-ratio: 1 / 1.6; }
+  .tetris-controls { display: flex; gap: 8px; margin-top: 15px; width: 100%; max-width: 320px; justify-content: center;}
+  .tetris-btn { background: var(--bg-panel); border: 1px solid var(--border); color: white; padding: 15px 20px; border-radius: 10px; font-size: 20px; cursor: pointer; flex: 1;}
 
-  /* Банк */
-  .finance-card { background: var(--bg-panel); border-radius: 16px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border); }
-  .finance-card h3 { font-size: 18px; margin-bottom: 10px; color: var(--accent); }
-  .credit-levels { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-  .credit-level-btn { background: var(--bg-cell); border: 1px solid var(--border); color: #fff; padding: 14px; border-radius: 10px; cursor: pointer; text-align: left; font-size: 15px; font-weight: bold; display: flex; justify-content: space-between; }
-  .credit-level-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .credit-level-btn span { color: var(--accent); }
-  .calendar-panel { background: var(--bg-panel); border-radius: 16px; padding: 16px; border: 1px solid var(--border); margin-top: 16px; }
-  .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .calendar-header button { width: 40px; height: 40px; padding: 0; font-size: 20px; background: var(--bg-cell); color: var(--accent); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; }
-  #calendarTitle { font-size: 18px; font-weight: bold; color: var(--accent); }
-  .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .calendar-day-name { font-size: 12px; text-align: center; color: var(--text-muted); font-weight: bold; padding: 6px 0; }
-  .calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 14px; border-radius: 8px; cursor: pointer; background: var(--bg-main); border: 1px solid transparent; transition: 0.15s; color: var(--text-main); }
-  .calendar-day.other-month { color: #444; cursor: default; }
-  .calendar-day.today { background: var(--accent); color: #0a1410; font-weight: bold; }
-
-  /* Модалки и навбар */
   .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .modal.show { display: flex; }
   .modal-content { background: var(--bg-panel); border: 2px solid var(--border); padding: 24px; border-radius: 16px; width: 100%; max-width: 340px; text-align: center; }
   .modal-title { font-size: 20px; margin-bottom: 12px; font-weight: bold; color: var(--accent);}
   .modal-text { font-size: 15px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.4;}
-  .nav-bar { height: 48px; background: #111; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; z-index: 200; }
+  .nav-bar { height: 48px; background: #111; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #222; z-index: 200; flex-shrink: 0; }
   .nav-btn { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.7; }
   .nav-btn:active { opacity: 1; background: rgba(255,255,255,0.1); border-radius: 50%; }
   .nav-btn svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2; }
   
-  /* Кнопка смены фона */
   .theme-btn {
     background: linear-gradient(135deg, #2c3e50, #3498db); border: none; color: #fff;
     padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; font-size: 15px;
@@ -210,272 +265,215 @@
 </head>
 <body>
 
+<!-- ЭКРАН ЗАПУСКА -->
+<div class="modal show" id="startupModal" style="background: var(--bg-main);">
+  <div class="modal-content" style="max-width: 400px; text-align: left;">
+    <div class="modal-title" style="text-align: center;">Добро пожаловать!</div>
+    <p style="text-align: center; margin-bottom: 20px;">Вы только что отучились на механика. Пора начать взрослую жизнь.</p>
+    
+    <label style="font-size: 14px; color: var(--text-muted);">Ваше имя (обязательно):</label>
+    <input type="text" id="playerNameInput" placeholder="Введите имя" style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg-main); color: #fff; margin-bottom: 15px; outline: none;">
+    
+    <label style="font-size: 14px; color: var(--text-muted);">Выберите город (обязательно):</label>
+    <select id="playerCityInput" style="width: 100%; padding: 12px; border-radius: 10px; border: 2px solid var(--border); background: var(--bg-main); color: #fff; margin-bottom: 20px; outline: none;">
+      <option value="" disabled selected>-- Выберите город --</option>
+      <option value="Москва">Москва — Высокие цены, много работы и пробок.</option>
+      <option value="Санкт-Петербург">Санкт-Петербург — Культурная столица, дождливо, но красиво.</option>
+      <option value="Тюмень">Тюмень — Родной город, дешевая жизнь и много нефти.</option>
+      <option value="Казань">Казань — Комфортный город, хорошая инфраструктура.</option>
+      <option value="Новосибирск">Новосибирск — Суровый край, много снега и науки.</option>
+      <option value="Екатеринбург">Екатеринбург — Промышленный гигант, контрасты.</option>
+      <option value="Краснодар">Краснодар — Тепло, уютно и много южан.</option>
+      <option value="Омск">Омск — Сибирский город с суровым характером и дешевым жильем.</option>
+    </select>
+    
+    <button class="btn" onclick="startGame()">Начать игру</button>
+  </div>
+</div>
+
 <div class="phone" id="phoneBody">
   <div class="status-bar">
-    <span>14:00</span>
+    <span id="clockDisplay">День 1 | 19 Окт | 08:00</span>
     <span>📶 🔋 100%</span>
   </div>
 
   <div class="screen-area">
     <!-- Рабочий стол -->
     <div class="home-screen">
-      <div class="app-icon" onclick="openApp('guess')">
-        <div class="icon-box icon-guess">🎲</div>
-        <span>Угадай<br>число</span>
-      </div>
-      <div class="app-icon" onclick="openApp('roulette')">
-        <div class="icon-box icon-roulette">🎡</div>
-        <span>Рулетка</span>
-      </div>
-      <div class="app-icon" onclick="openApp('slots')">
-        <div class="icon-box icon-slots">🎰</div>
-        <span>Слоты</span>
-      </div>
-      <div class="app-icon" onclick="openApp('mines')">
-        <div class="icon-box icon-mines">💥</div>
-        <span>Мины</span>
+      <div class="app-icon" onclick="openApp('messages')">
+        <div class="icon-box icon-messages">💬</div>
+        <span>Сообщения</span>
+        <div class="badge" id="msgBadge">1</div>
       </div>
       <div class="app-icon" onclick="openApp('mechanic')">
         <div class="icon-box icon-mechanic">🔧</div>
         <span>СТО ВАЗ</span>
       </div>
+      <div class="app-icon" onclick="openApp('relations')">
+        <div class="icon-box icon-relations">❤️</div>
+        <span>Отношения</span>
+      </div>
+      <div class="app-icon" onclick="openApp('casino')">
+        <div class="icon-box icon-casino">🎰</div>
+        <span>Казино</span>
+      </div>
       <div class="app-icon" onclick="openApp('bank')">
         <div class="icon-box icon-bank">🏦</div>
         <span>Банк</span>
       </div>
-      <div class="app-icon" onclick="openApp('tetris')">
-        <div class="icon-box icon-tetris">🧱</div>
-        <span>Plame<br>Blocks</span>
+      <div class="app-icon" onclick="openApp('darknet')">
+        <div class="icon-box icon-darknet">🕶️</div>
+        <span>Даркнет</span>
       </div>
-      <div class="app-icon" onclick="openApp('race')">
-        <div class="icon-box icon-race">🏎️</div>
-        <span>Drive Ace</span>
+      <div class="app-icon" onclick="openApp('sleep')">
+        <div class="icon-box icon-sleep">🛌</div>
+        <span>Спать</span>
+      </div>
+      <div class="app-icon" onclick="openApp('shop')">
+        <div class="icon-box icon-shop">🛒</div>
+        <span>Магазин</span>
+      </div>
+      <div class="app-icon" onclick="openApp('cars')">
+        <div class="icon-box icon-cars">🚗</div>
+        <span>Автосалон</span>
+      </div>
+      <div class="app-icon" onclick="openApp('garage')">
+        <div class="icon-box icon-garage">🛠️</div>
+        <span>Гараж</span>
+      </div>
+      <div class="app-icon" onclick="openApp('realestate')">
+        <div class="icon-box icon-realestate">🏠</div>
+        <span>Недвижимость</span>
       </div>
     </div>
 
-    <!-- ЭКРАН: PlameBlocks -->
-    <div class="app-screen" id="app-tetris">
+    <!-- ЭКРАН: ОТНОШЕНИЯ -->
+    <div class="app-screen" id="app-relations">
       <div class="app-header">
-        <button class="back-btn" onclick="closeApp('tetris')">‹ Назад</button>
-        <div class="app-title">PlameBlocks</div>
+        <button class="back-btn" onclick="closeApp('relations')">‹ Назад</button>
+        <div class="app-title">Отношения</div>
       </div>
       <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
-      <div class="app-content tetris-wrapper">
-        <div class="tetris-stats">
-          <div>РЕКОРД: <span id="tetrisRecord">0</span></div>
-          <div>ОЧКИ: <span id="tetrisScore">0</span></div>
-        </div>
-        <canvas id="tetrisCanvas" width="240" height="400"></canvas>
-        <div class="tetris-controls">
-          <button class="tetris-btn" onclick="tetrisMove(-1)">←</button>
-          <button class="tetris-btn" onclick="tetrisRotate()">↻</button>
-          <button class="tetris-btn" onclick="tetrisMove(1)">→</button>
-          <button class="tetris-btn" onclick="tetrisDrop()">↓</button>
-        </div>
+      <div class="app-content" id="relationsList">
+        <!-- Список NPC -->
       </div>
     </div>
 
-    <!-- ЭКРАН: Drive Ace -->
-    <div class="app-screen" id="app-race">
+    <!-- ЭКРАН: КАЗИНО -->
+    <div class="app-screen" id="app-casino">
       <div class="app-header">
-        <button class="back-btn" onclick="closeApp('race')">‹ Назад</button>
-        <div class="app-title">Drive Ace</div>
-      </div>
-      <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
-      <div class="app-content race-wrapper">
-        <div class="race-hud">
-          <div class="race-speed">Скорость: <span id="raceSpeed">30</span> км/ч</div>
-          <div class="race-speed">Счёт: <span id="raceScore">0</span></div>
-        </div>
-        <canvas id="raceCanvas"></canvas>
-        <div class="race-controls">
-          <button class="race-btn" onclick="raceMove(-1)">◀</button>
-          <button class="race-btn" onclick="raceMove(1)">▶</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ЭКРАН: Угадай число -->
-    <div class="app-screen" id="app-guess">
-      <div class="app-header">
-        <button class="back-btn" onclick="closeApp('guess')">‹ Назад</button>
-        <div class="app-title">Угадай число</div>
-      </div>
-      <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
-      <div class="app-content">
-        <h2>Угадай число</h2>
-        <p>Загадано число от 1 до 10. Угадаешь — выиграешь ×5.</p>
-        <input type="number" id="guessBet" placeholder="Ставка (₽)" min="1000" value="5000">
-        <input type="number" id="guessNumber" placeholder="Твоё число (1-10)" min="1" max="10">
-        <button class="btn" id="guessBtn">Играть</button>
-        <div class="result" id="guessResult"></div>
-      </div>
-    </div>
-
-    <!-- ЭКРАН: Рулетка -->
-    <div class="app-screen" id="app-roulette">
-      <div class="app-header">
-        <button class="back-btn" onclick="closeApp('roulette')">‹ Назад</button>
-        <div class="app-title">Рулетка</div>
+        <button class="back-btn" onclick="closeApp('casino')">‹ Назад</button>
+        <div class="app-title">Казино</div>
       </div>
       <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽ | Фишек: <span id="exChips">0</span></div>
       <div class="app-content">
-        <div class="exchange-box">
-          <div class="exchange-btns">
-            <button class="btn-red" data-val="1">Купить 1К</button>
-            <button class="btn-purple" data-val="5">Купить 5К</button>
-            <button class="btn-blue" data-val="10">Купить 10К</button>
-          </div>
-          <div class="exchange-btns">
-            <button class="btn btn-secondary" id="sellChipsBtn" style="padding: 8px; font-size: 12px; flex: 1;">Продать все</button>
-          </div>
+        <div class="casino-tabs">
+          <div class="casino-tab active" onclick="switchCasinoTab('guess', this)">Угадай</div>
+          <div class="casino-tab" onclick="switchCasinoTab('roulette', this)">Рулетка</div>
+          <div class="casino-tab" onclick="switchCasinoTab('slots', this)">Слоты</div>
+          <div class="casino-tab" onclick="switchCasinoTab('mines', this)">Мины</div>
+          <div class="casino-tab" onclick="switchCasinoTab('tetris', this)">Тетрис</div>
         </div>
 
-        <div class="roulette-table">
-          <div class="wheel-wrapper">
-            <div class="wheel-pointer"></div>
-            <canvas id="rouletteCanvas" width="200" height="200"></canvas>
-            <div class="wheel-center" id="wheelCenter">?</div>
-          </div>
-          <div class="betting-grid" id="bettingGrid"></div>
+        <!-- Угадай число -->
+        <div id="casino-panel-guess" class="casino-panel">
+          <h2>Угадай число</h2><p>Загадано число от 1 до 10. Угадаешь — выиграешь ×5.</p>
+          <input type="number" id="guessBet" placeholder="Ставка (₽)" min="1000" value="5000">
+          <input type="number" id="guessNumber" placeholder="Твоё число (1-10)" min="1" max="10">
+          <button class="btn" id="guessBtn">Играть</button>
+          <div class="result" id="guessResult"></div>
         </div>
 
-        <div class="chip-selector">
-          <button class="chip-btn chip-1 active" data-val="1">1</button>
-          <button class="chip-btn chip-5" data-val="5">5</button>
-          <button class="chip-btn chip-10" data-val="10">10</button>
+        <!-- Рулетка -->
+        <div id="casino-panel-roulette" class="casino-panel" style="display:none;">
+          <div class="exchange-box"><div class="exchange-btns"><button class="btn-red" data-val="1">Купить 1К</button><button class="btn-purple" data-val="5">Купить 5К</button><button class="btn-blue" data-val="10">Купить 10К</button></div><div class="exchange-btns"><button class="btn btn-secondary" id="sellChipsBtn" style="padding: 8px; font-size: 12px; flex: 1;">Продать все</button></div></div>
+          <div class="roulette-table"><div class="wheel-wrapper"><div class="wheel-pointer"></div><canvas id="rouletteCanvas" width="240" height="240"></canvas><div class="wheel-center" id="wheelCenter">?</div></div><div class="betting-grid" id="bettingGrid"></div></div>
+          <div class="chip-selector"><button class="chip-btn chip-1 active" data-val="1">1</button><button class="chip-btn chip-5" data-val="5">5</button><button class="chip-btn chip-10" data-val="10">10</button></div>
+          <div style="display:flex; gap:10px; margin-top:10px; width: 100%; max-width: 400px;"><button id="clearBetsBtn" class="btn btn-secondary" style="flex:1; padding: 10px; font-size: 14px;">Очистить</button><button id="spinRouletteBtn" class="btn" style="flex:2; padding: 10px; font-size: 14px;">Крутить!</button></div>
+          <div class="result" id="rouletteResult"></div>
         </div>
-        
-        <div style="display:flex; gap:10px; margin-top:10px;">
-          <button id="clearBetsBtn" class="btn btn-secondary" style="flex:1; padding: 10px; font-size: 14px;">Очистить</button>
-          <button id="spinRouletteBtn" class="btn" style="flex:2; padding: 10px; font-size: 14px;">Крутить!</button>
+
+        <!-- Слоты -->
+        <div id="casino-panel-slots" class="casino-panel" style="display:none;">
+          <h2>Слоты</h2><p>Три одинаковых символа — выигрыш ×10. Два одинаковых — ×2.</p>
+          <div class="slots"><div class="slot" id="slot0">🍒</div><div class="slot" id="slot1">🍋</div><div class="slot" id="slot2">⭐</div></div>
+          <input type="number" id="slotsBet" placeholder="Ставка (₽)" min="1000" value="5000"><button class="btn" id="slotsBtn">Крутить</button><div class="result" id="slotsResult"></div>
         </div>
-        <div class="result" id="rouletteResult"></div>
+
+        <!-- Мины -->
+        <div id="casino-panel-mines" class="casino-panel" style="display:none;">
+          <div class="mines-stats"><div class="stat-box"><div class="stat-title">Сейчас</div><div class="stat-value" id="minesCurrentMult">—</div></div><div class="stat-box"><div class="stat-title">Следующая</div><div class="stat-value gold" id="minesNextMult">×1,02</div></div><div class="stat-box"><div class="stat-title">Шанс</div><div class="stat-value" id="minesChance">88 %</div></div></div>
+          <div class="mines-grid-new" id="minesGrid"></div>
+          <div class="bet-control-box"><div class="bet-row"><button class="bet-minus-plus" onclick="changeMinesBet(-1000)">−</button><div class="bet-amount-display" id="minesBetDisplay">1 000 ₽</div><button class="bet-minus-plus" onclick="changeMinesBet(1000)">+</button></div><div class="quick-bets-row"><button class="quick-btn" onclick="setMinesBet(100)">100</button><button class="quick-btn active" onclick="setMinesBet(1000)">1 000</button><button class="quick-btn" onclick="setMinesBet(10000)">10 000</button><button class="quick-btn" onclick="setMinesBet('max')">МАКС</button></div></div>
+          <div class="mines-select-box"><div class="mines-select-header"><div class="mines-select-title">Мин на поле</div><div class="mines-select-controls"><button class="bet-minus-plus" onclick="changeMinesCount(-1)">−</button><span id="minesCountDisplay">3</span><button class="bet-minus-plus" onclick="changeMinesCount(1)">+</button></div></div><div class="mines-options-row"><button class="mine-opt-btn" onclick="setMinesCount(1)">1</button><button class="mine-opt-btn active" onclick="setMinesCount(3)">3</button><button class="mine-opt-btn" onclick="setMinesCount(5)">5</button><button class="mine-opt-btn" onclick="setMinesCount(10)">10</button><button class="mine-opt-btn" onclick="setMinesCount(24)">24</button></div></div>
+          <button class="main-play-btn" id="minesStartBtn" onclick="startMines()">Играть за 1 000 ₽</button>
+          <button class="main-play-btn cashout-btn" id="minesCashoutBtn" style="display: none;" onclick="cashoutMines()">Забрать выигрыш</button>
+          <div class="result" id="minesResult"></div>
+        </div>
+
+        <!-- Тетрис -->
+        <div id="casino-panel-tetris" class="casino-panel" style="display:none;">
+          <div class="tetris-wrapper">
+            <div class="tetris-stats"><div>РЕКОРД: <span id="tetrisRecord">0</span></div><div>ОЧКИ: <span id="tetrisScore">0</span></div></div>
+            <canvas id="tetrisCanvas" width="240" height="400"></canvas>
+            <div class="tetris-controls"><button class="tetris-btn" onclick="tetrisMove(-1)">←</button><button class="tetris-btn" onclick="tetrisRotate()">↻</button><button class="tetris-btn" onclick="tetrisMove(1)">→</button><button class="tetris-btn" onclick="tetrisDrop()">↓</button></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ЭКРАН: Слоты -->
-    <div class="app-screen" id="app-slots">
+    <!-- ЭКРАН: Даркнет -->
+    <div class="app-screen" id="app-darknet">
       <div class="app-header">
-        <button class="back-btn" onclick="closeApp('slots')">‹ Назад</button>
-        <div class="app-title">Слоты</div>
+        <button class="back-btn" onclick="closeApp('darknet')">‹ Назад</button>
+        <div class="app-title">Даркнет</div>
       </div>
-      <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
+      <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽ | Наличка: <span id="dirtyCash">0</span> ₽</div>
       <div class="app-content">
-        <h2>Слоты</h2>
-        <p>Три одинаковых символа — выигрыш ×10. Два одинаковых — ×2.</p>
-        <div class="slots">
-          <div class="slot" id="slot0">🍒</div>
-          <div class="slot" id="slot1">🍋</div>
-          <div class="slot" id="slot2">⭐</div>
+        <div class="darknet-tabs">
+          <div class="darknet-tab active" onclick="switchDarknetTab('cars', this)">Угнанные тачки</div>
+          <div class="darknet-tab" onclick="switchDarknetTab('drugs', this)">Наркота</div>
+          <div class="darknet-tab" onclick="switchDarknetTab('realestate', this)">Отжим хат</div>
         </div>
-        <input type="number" id="slotsBet" placeholder="Ставка (₽)" min="1000" value="5000">
-        <button class="btn" id="slotsBtn">Крутить</button>
-        <div class="result" id="slotsResult"></div>
-      </div>
-    </div>
 
-    <!-- ЭКРАН: МИНЫ -->
-    <div class="app-screen" id="app-mines">
-      <div class="app-header">
-        <button class="back-btn" onclick="closeApp('mines')">‹ Назад</button>
-        <div class="app-title">Мины</div>
-      </div>
-      <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
-      
-      <div class="app-content">
-        <div class="mines-stats">
-          <div class="stat-box">
-            <div class="stat-title">Сейчас</div>
-            <div class="stat-value" id="minesCurrentMult">—</div>
+        <div id="darknet-list-cars" class="darknet-list">
+          <div class="dark-item">
+            <div class="dark-title">ВАЗ 2107 (Угнан)</div>
+            <div class="dark-desc">Без документов, номера перебиты. Тачка огонь, но палевная. Шанс спалиться: 30%.</div>
+            <div class="dark-price">100 000 ₽</div>
+            <button class="dark-btn" onclick="buyStolenCar('ВАЗ 2107', 100000)">Купить</button>
           </div>
-          <div class="stat-box">
-            <div class="stat-title">Следующая</div>
-            <div class="stat-value gold" id="minesNextMult">×1,02</div>
-          </div>
-          <div class="stat-box">
-            <div class="stat-title">Шанс</div>
-            <div class="stat-value" id="minesChance">88 %</div>
+          <div class="dark-item">
+            <div class="dark-title">Hyundai Solaris (Угнан)</div>
+            <div class="dark-desc">Свежая, но могут искать. Шанс спалиться: 30%.</div>
+            <div class="dark-price">300 000 ₽</div>
+            <button class="dark-btn" onclick="buyStolenCar('Hyundai Solaris', 300000)">Купить</button>
           </div>
         </div>
 
-        <div class="mines-grid-new" id="minesGrid"></div>
-
-        <div class="bet-control-box">
-          <div class="bet-row">
-            <button class="bet-minus-plus" onclick="changeMinesBet(-1000)">−</button>
-            <div class="bet-amount-display" id="minesBetDisplay">1 000 ₽</div>
-            <button class="bet-minus-plus" onclick="changeMinesBet(1000)">+</button>
+        <div id="darknet-list-drugs" class="darknet-list" style="display:none;">
+          <div class="dark-item">
+            <div class="dark-title">Пакет «Весёлый» (1 кг)</div>
+            <div class="dark-desc">Опт. Нужно будет продать в розницу. Шанс спалиться: 30%.</div>
+            <div class="dark-price">50 000 ₽</div>
+            <button class="dark-btn" onclick="buyDrugs(50000)">Купить опт</button>
           </div>
-          <div class="quick-bets-row">
-            <button class="quick-btn" onclick="setMinesBet(100)">100</button>
-            <button class="quick-btn active" onclick="setMinesBet(1000)">1 000</button>
-            <button class="quick-btn" onclick="setMinesBet(10000)">10 000</button>
-            <button class="quick-btn" onclick="setMinesBet('max')">МАКС</button>
-          </div>
-        </div>
-
-        <div class="mines-select-box">
-          <div class="mines-select-header">
-            <div class="mines-select-title">Мин на поле</div>
-            <div class="mines-select-controls">
-              <button class="bet-minus-plus" onclick="changeMinesCount(-1)">−</button>
-              <span id="minesCountDisplay">3</span>
-              <button class="bet-minus-plus" onclick="changeMinesCount(1)">+</button>
-            </div>
-          </div>
-          <div class="mines-options-row">
-            <button class="mine-opt-btn" onclick="setMinesCount(1)">1</button>
-            <button class="mine-opt-btn active" onclick="setMinesCount(3)">3</button>
-            <button class="mine-opt-btn" onclick="setMinesCount(5)">5</button>
-            <button class="mine-opt-btn" onclick="setMinesCount(10)">10</button>
-            <button class="mine-opt-btn" onclick="setMinesCount(24)">24</button>
+          <div class="dark-item">
+            <div class="dark-title">Продать товар</div>
+            <div class="dark-desc">Сбыть всё, что купил. Получить грязные деньги. Шанс спалиться: 30%.</div>
+            <div class="dark-price">Доход: x3</div>
+            <button class="dark-btn" onclick="sellDrugs()">Продать</button>
           </div>
         </div>
 
-        <button class="main-play-btn" id="minesStartBtn" onclick="startMines()">Играть за 1 000 ₽</button>
-        <button class="main-play-btn cashout-btn" id="minesCashoutBtn" style="display: none;" onclick="cashoutMines()">Забрать выигрыш</button>
-        
-        <div class="result" id="minesResult"></div>
-      </div>
-    </div>
-
-    <!-- ЭКРАН: СТО ВАЗ (ОБРАЗОВАТЕЛЬНЫЙ) -->
-    <div class="app-screen" id="app-mechanic">
-      <div class="app-header">
-        <button class="back-btn" onclick="closeApp('mechanic')">‹ Назад</button>
-        <div class="app-title">СТО ВАЗ 🔧</div>
-      </div>
-      <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
-      <div class="app-content">
-        
-        <!-- Заказ клиента -->
-        <div class="client-order-box" id="clientOrderBox">
-          <div class="client-title">Заказ клиента</div>
-          <div class="client-symptoms" id="clientSymptoms">
-            Нажмите «Принять машину», чтобы начать диагностику.
+        <div id="darknet-list-realestate" class="darknet-list" style="display:none;">
+          <div class="dark-item">
+            <div class="dark-title">Отжать хату (Однушка)</div>
+            <div class="dark-desc">Быстрое бабло. Шанс, что крыша узнает: 30%.</div>
+            <div class="dark-price">+50 000 ₽</div>
+            <button class="dark-btn" onclick="extortProperty()">Отжать</button>
           </div>
         </div>
-
-        <!-- Схема мотора (скрыта до принятия заказа) -->
-        <div id="mechanicGame" style="display: none;">
-          <div class="engine-diagram" id="engineDiagram">
-            <!-- Заполняется JS -->
-          </div>
-
-          <!-- Кнопки действий -->
-          <div class="toolbox">
-            <button class="btn btn-secondary" id="btnCheck" onclick="diagnosePart()" style="margin-top:0;">🔍 Проверить деталь</button>
-            <button class="btn" id="btnRepair" onclick="repairPart()" style="margin-top:0; display: none;">🔧 Заменить деталь (1000 ₽)</button>
-          </div>
-          
-          <div class="result" id="mechanicResult"></div>
-        </div>
-
-        <div id="mechanicSetup" style="margin-top: 20px;">
-          <button class="btn" id="mechanicStartBtn">Принять следующую машину (Бесплатно)</button>
-        </div>
-
       </div>
     </div>
 
@@ -487,10 +485,17 @@
       </div>
       <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
       <div class="app-content">
-        
         <div class="finance-card">
-          <h3>Кредиты</h3>
-          <p id="creditStatus">Выберите уровень кредита.</p>
+          <h3>Кредит</h3>
+          <div class="loan-terms" id="loanTermsContainer">
+            <button class="loan-term-btn active" onclick="setLoanTerm(1, this)">1 мес</button>
+            <button class="loan-term-btn" onclick="setLoanTerm(2, this)">2 мес</button>
+            <button class="loan-term-btn" onclick="setLoanTerm(3, this)">3 мес</button>
+            <button class="loan-term-btn" onclick="setLoanTerm(6, this)">6 мес</button>
+            <button class="loan-term-btn" onclick="setLoanTerm(8, this)">8 мес</button>
+            <button class="loan-term-btn" onclick="setLoanTerm(12, this)">12 мес</button>
+          </div>
+          <p id="creditStatus">Выберите сумму кредита.</p>
           <div class="credit-levels" id="creditLevels"></div>
           <div id="creditActions" style="display: none; margin-top: 10px;">
             <button class="btn btn-secondary" onclick="payCredit()">Погасить всё</button>
@@ -498,44 +503,244 @@
         </div>
 
         <div class="finance-card">
-          <h3>Микрозайм</h3>
-          <p>1% в день. Быстрые деньги.</p>
-          <button class="btn" onclick="takeMicroLoan()">Получить 10 000 ₽</button>
+          <h3>Вклады</h3>
+          <p>Доход: 10% в игровой день.</p>
+          <input type="number" id="depositInput" class="deposit-input" placeholder="Сумма вклада">
+          <button class="btn" onclick="openDeposit()">Открыть вклад</button>
+          <div id="activeDeposit" style="margin-top:10px; color:var(--success);"></div>
         </div>
 
-        <div class="calendar-panel">
-          <div class="calendar-header">
-            <button id="prevMonth">‹</button>
-            <div id="calendarTitle">—</div>
-            <button id="nextMonth">›</button>
+        <div class="calendar-panel"><div class="calendar-header"><button id="prevMonth">‹</button><div id="calendarTitle">—</div><button id="nextMonth">›</button></div><div class="calendar-grid" id="calendarGrid"></div></div>
+      </div>
+    </div>
+
+    <!-- ЭКРАН: СТО -->
+    <div class="app-screen" id="app-mechanic">
+      <div class="app-header">
+        <button class="back-btn" onclick="closeApp('mechanic')">‹ Назад</button>
+        <div class="app-title">СТО ВАЗ</div>
+      </div>
+      <div class="balance-bar">
+        <span>Деньги: <span class="balance-val">0</span> ₽</span>
+        <span>Усталость: <span id="fatigueVal">0</span>%</span>
+        <span>Еда: <span id="foodVal">100</span>%</span>
+      </div>
+      
+      <div class="app-content" id="mechanicContent">
+        <div id="lifeSetup">
+          <div class="event-log" id="introText">
+            <p id="greetingText">Загрузка...</p>
           </div>
-          <div class="calendar-grid" id="calendarGrid"></div>
+          <button class="life-btn life-btn-danger" onclick="startDay()" id="startDayBtn">🌅 Встать и пойти на работу</button>
         </div>
 
-        <div style="margin-top: 20px; text-align: center;">
-          <button class="theme-btn" onclick="changeTheme()">
-            🎨 Сменить обои телефона
-          </button>
+        <div id="workSetup" style="display: none;">
+          <div class="life-stats">
+             <div class="life-stat">Транспорт: <span id="transportVal">Пешком</span></div>
+             <div class="life-stat">Палыч: <span id="palyhMood">Злой</span></div>
+          </div>
+          
+          <button class="life-btn life-btn-secondary" onclick="buyTransport()" id="buyTransportBtn">🚲 Купить велосипед (15 000 ₽)</button>
+          
+          <div id="clientOrderBox" style="display: none;">
+            <div class="client-order-box">
+              <div class="client-title" id="clientName">Клиент...</div>
+              <div class="client-car" id="clientCar"></div>
+              <div class="client-symptoms" id="clientSymptoms"></div>
+            </div>
+            <div class="engine-diagram" id="engineDiagram"></div>
+            <div class="toolbox" style="display:flex; gap:10px; margin-bottom:10px;">
+              <button class="life-btn life-btn-secondary" id="btnCheck" onclick="diagnosePart()" style="padding:10px; font-size:14px;">🔍 Проверить</button>
+              <button class="life-btn life-btn-danger" id="btnRepair" onclick="repairPart()" style="padding:10px; font-size:14px; display:none;">🔧 Починить</button>
+            </div>
+            <div class="result" id="mechanicResult" style="text-align:center; margin-top:10px; font-weight:bold;"></div>
+          </div>
+
+          <button class="life-btn" onclick="takeNewClient()" id="takeClientBtn">👨‍🔧 Принять следующую машину</button>
+          <button class="life-btn life-btn-success" onclick="finishDay()" id="finishDayBtn" style="display:none;">🏠 Закончить рабочий день</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ЭКРАН: Сон -->
+    <div class="app-screen" id="app-sleep">
+      <div class="app-header"><button class="back-btn" onclick="closeApp('sleep')">‹ Назад</button><div class="app-title">Сон</div></div>
+      <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
+      <div class="app-content" style="justify-content: center; align-items: center; text-align: center;">
+        <h2 style="font-size: 60px; margin-bottom: 20px;">🛌</h2>
+        <p>Сейчас <span id="sleepTimeDisplay">08:00</span>.</p>
+        <p style="margin-bottom: 30px;">Ложитесь спать, чтобы восстановить силы и наступил следующий день.</p>
+        <button class="btn" onclick="goToSleep()" style="max-width: 300px;">Лечь спать</button>
+      </div>
+    </div>
+
+    <!-- ЭКРАН: Магазин Еды -->
+    <div class="app-screen" id="app-shop">
+      <div class="app-header"><button class="back-btn" onclick="closeApp('shop')">‹ Назад</button><div class="app-title">Магазин продуктов</div></div>
+      <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
+      <div class="app-content">
+        <div class="shop-item">
+          <div class="shop-item-info"><div class="shop-item-title">Шаурма</div><div class="shop-item-desc">Восстанавливает 30% еды. (Осторожно: есть 5% шанс отравиться!)</div></div>
+          <div style="text-align:right;"><div class="shop-item-price">300 ₽</div><button class="buy-btn" onclick="buyShawarma()">Купить</button></div>
+        </div>
+        <div class="shop-item">
+          <div class="shop-item-info"><div class="shop-item-title">Пельмени</div><div class="shop-item-desc">Восстанавливает 50% еды. Сытно и вкусно.</div></div>
+          <div style="text-align:right;"><div class="shop-item-price">500 ₽</div><button class="buy-btn" onclick="buyFood(500, 50)">Купить</button></div>
+        </div>
+        <div class="shop-item">
+          <div class="shop-item-info"><div class="shop-item-title">Борщ с пампушками</div><div class="shop-item-desc">Восстанавливает 100% еды. Русская классика.</div></div>
+          <div style="text-align:right;"><div class="shop-item-price">1000 ₽</div><button class="buy-btn" onclick="buyFood(1000, 100)">Купить</button></div>
+        </div>
+        <div class="shop-item">
+          <div class="shop-item-info"><div class="shop-item-title">Суши сет</div><div class="shop-item-desc">Восстанавливает 70% еды. Для ценителей.</div></div>
+          <div style="text-align:right;"><div class="shop-item-price">1500 ₽</div><button class="buy-btn" onclick="buyFood(1500, 70)">Купить</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ЭКРАН: Автосалон -->
+    <div class="app-screen" id="app-cars">
+      <div class="app-header"><button class="back-btn" onclick="closeApp('cars')">‹ Назад</button><div class="app-title">Автосалон</div></div>
+      <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
+      <div class="app-content">
+        <div class="car-tabs">
+          <div class="car-tab active" onclick="switchCarTab('vaz', this)">ВАЗ (Lada)</div>
+          <div class="car-tab" onclick="switchCarTab('hyundai', this)">Hyundai</div>
+          <div class="car-tab" onclick="switchCarTab('nissan', this)">Nissan</div>
+        </div>
+        
+        <div id="car-list-vaz" class="car-list">
+          <div class="car-category">Классика</div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">ВАЗ-2101 («Копейка»)</div>
+              <div class="shop-item-desc">Легенда. Минусы: гниет, ломается. Плюсы: чинится на коленке.</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">50 000 ₽</div><button class="buy-btn" onclick="buyCar('ВАЗ-2101', 50000, 'classic')">Купить</button></div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">ВАЗ-2107</div>
+              <div class="shop-item-desc">Минусы: жрет бензин как не в себя. Плюсы: запчасти в каждом ларьке.</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">150 000 ₽</div><button class="buy-btn" onclick="buyCar('ВАЗ-2107', 150000, 'classic')">Купить</button></div>
+          </div>
+          
+          <div class="car-category">Переднеприводные</div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">ВАЗ-2109 («Девятка»)</div>
+              <div class="shop-item-desc">Минусы: одни минусы, ржавеет, сыпется. Плюсы: относительно дешевая.</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">200 000 ₽</div><button class="buy-btn" onclick="buyCar('ВАЗ-2109', 200000, 'bad')">Купить</button></div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">ВАЗ-2114</div>
+              <div class="shop-item-desc">Как 2109, но с другой фарой. Всё так же сыпется.</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">300 000 ₽</div><button class="buy-btn" onclick="buyCar('ВАЗ-2114', 300000, 'bad')">Купить</button></div>
+          </div>
         </div>
 
-        <div style="margin-top: 20px; text-align: center;">
-          <button class="btn" style="background: var(--danger); color: #fff;" onclick="openResetModal()">Сбросить весь прогресс</button>
+        <div id="car-list-hyundai" class="car-list" style="display:none;">
+          <div class="car-category">Седаны</div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">Hyundai Accent</div>
+              <div class="shop-item-desc">Авто на каждый день. Неприхотлив, приятен, дешев в обслуживании. Минус: не защищен от коррозии.</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">400 000 ₽</div><button class="buy-btn" onclick="buyCar('Hyundai Accent', 400000, 'good')">Купить</button></div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">Hyundai Solaris</div>
+              <div class="shop-item-desc">Современный, быстрый. Минус: дорогие запчасти.</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">700 000 ₽</div><button class="buy-btn" onclick="buyCar('Hyundai Solaris', 700000, 'good')">Купить</button></div>
+          </div>
         </div>
 
+        <div id="car-list-nissan" class="car-list" style="display:none;">
+          <div class="car-category">Седаны</div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">Nissan Almera</div>
+              <div class="shop-item-desc">Надежный японец. Минусы: свет хуеты ночью и в туман ничего не видно.</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">500 000 ₽</div><button class="buy-btn" onclick="buyCar('Nissan Almera', 500000, 'average')">Купить</button></div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">Nissan X-Trail</div>
+              <div class="shop-item-desc">Кроссовер. Минусы: дорогое обслуживание.</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">2 000 000 ₽</div><button class="buy-btn" onclick="buyCar('Nissan X-Trail', 2000000, 'average')">Купить</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ЭКРАН: Недвижимость -->
+    <div class="app-screen" id="app-realestate">
+      <div class="app-header"><button class="back-btn" onclick="closeApp('realestate')">‹ Назад</button><div class="app-title">Недвижимость</div></div>
+      <div class="balance-bar">Баланс: <span class="balance-val">0</span> ₽</div>
+      <div class="app-content">
+        <div class="realestate-tabs">
+          <div class="realestate-tab active" onclick="switchRealEstateTab('rent', this)">Аренда</div>
+          <div class="realestate-tab" onclick="switchRealEstateTab('buy', this)">Покупка</div>
+        </div>
+        
+        <div id="realestate-list-rent" class="realestate-list">
+          <div class="car-category">Снять жилье (списывается каждый день)</div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">Койка в общаге</div>
+              <div class="shop-item-desc">Дешево и сердито. Минус: шумные соседи, плохой сон (+усталость).</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">-2 000 ₽ / день</div><button class="buy-btn" onclick="rentApartment('Койка в общаге', 2000, 'bad')">Снять</button></div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">Однушка в панельке</div>
+              <div class="shop-item-desc">Уютно, но далеко от работы. Минус: долго добираться.</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">-10 000 ₽ / день</div><button class="buy-btn" onclick="rentApartment('Однушка в панельке', 10000, 'average')">Снять</button></div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">Двушка в центре</div>
+              <div class="shop-item-desc">Комфорт, близко к СТО. Плюс: хороший сон (меньше усталости).</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">-20 000 ₽ / день</div><button class="buy-btn" onclick="rentApartment('Двушка в центре', 20000, 'good')">Снять</button></div>
+          </div>
+          <div class="shop-item">
+            <div class="shop-item-info">
+              <div class="shop-item-title">Пентхаус</div>
+              <div class="shop-item-desc">Роскошь, бассейн на крыше. Плюс: максимальный комфорт (много сил).</div>
+            </div>
+            <div style="text-align:right;"><div class="shop-item-price">-50 000 ₽ / день</div><button class="buy-btn" onclick="rentApartment('Пентхаус', 50000, 'best')">Снять</button></div>
+          </div>
+        </div>
+
+        <div id="realestate-list-buy" class="realestate-list" style="display:none;">
+          <div class="car-category">Купить недвижимость (приносит доход)</div>
+          <div class="shop-item"><div class="shop-item-info"><div class="shop-item-title">Студия</div><div class="shop-item-desc">Приносит +5 000 ₽ в день</div></div><div style="text-align:right;"><div class="shop-item-price">500 000 ₽</div><button class="buy-btn" onclick="buyProperty('Студия', 500000, 5000)">Купить</button></div></div>
+          <div class="shop-item"><div class="shop-item-info"><div class="shop-item-title">Однушка</div><div class="shop-item-desc">Приносит +10 000 ₽ в день</div></div><div style="text-align:right;"><div class="shop-item-price">1 000 000 ₽</div><button class="buy-btn" onclick="buyProperty('Однушка', 1000000, 10000)">Купить</button></div></div>
+          <div class="shop-item"><div class="shop-item-info"><div class="shop-item-title">Двушка</div><div class="shop-item-desc">Приносит +15 000 ₽ в день</div></div><div style="text-align:right;"><div class="shop-item-price">1 500 000 ₽</div><button class="buy-btn" onclick="buyProperty('Двушка', 1500000, 15000)">Купить</button></div></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- НИЖНЯЯ ПАНЕЛЬ ANDROID -->
   <div class="nav-bar">
     <div class="nav-btn" onclick="alert('Меню')"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></div>
     <div class="nav-btn" onclick="closeAllApps()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/></svg></div>
     <div class="nav-btn" onclick="goBack()"><svg viewBox="0 0 24 24"><path d="M15 5 L7 12 L15 19 Z"/></svg></div>
   </div>
-
 </div>
 
-<!-- Модалка -->
+<!-- Модалки -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <div class="modal-title" id="modalTitle">Уведомление</div>
@@ -543,8 +748,6 @@
     <button class="btn" onclick="closeModal()">ОК</button>
   </div>
 </div>
-
-<!-- Модалка сброса -->
 <div class="modal" id="resetModal">
   <div class="modal-content">
     <div class="modal-title" style="color: var(--danger);">Сброс прогресса</div>
@@ -555,34 +758,66 @@
 </div>
 
 <script>
-  // ================= ОБОИ ТЕЛЕФОНА =================
-  const themes = [
-    { name: 'Тёмная (Стандарт)', css: '#0a0e14' },
-    { name: 'Космос', css: 'linear-gradient(135deg, #1a0b2e, #3d1c6e)' },
-    { name: 'Океан', css: 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)' },
-    { name: 'Закат', css: 'linear-gradient(135deg, #42275a, #734b6d)' },
-    { name: 'Матрица', css: 'radial-gradient(circle, #0f1a10, #051005)' }
-  ];
-  let currentThemeIndex = 0;
+  // ================= ВРЕМЯ И ДАТА =================
+  let gameTime = 8 * 60; 
+  let gameDate = new Date(2026, 9, 19); 
+  let timeInterval;
+  let isPaused = false;
+  let isLunch = false;
 
-  function changeTheme() {
-    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-    document.getElementById('phoneBody').style.background = themes[currentThemeIndex].css;
-    // Меняем прозрачность рабочего стола, чтобы было видно обои
-    document.querySelector('.home-screen').style.background = 'transparent';
-    showModal('Обои изменены', `Тема: ${themes[currentThemeIndex].name}`);
+  function updateClock() {
+    const hours = Math.floor(gameTime / 60) % 24;
+    const minutes = gameTime % 60;
+    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    
+    const months = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+    const formattedDate = `${gameDate.getDate()} ${months[gameDate.getMonth()]}`;
+    const dayNum = gameDate.getDate() - 18;
+    
+    document.getElementById('clockDisplay').textContent = `День ${dayNum} | ${formattedDate} | ${formattedTime}`;
+    if (document.getElementById('sleepTimeDisplay')) document.getElementById('sleepTimeDisplay').textContent = formattedTime;
+    
+    if (gameTime >= 12 * 60 && gameTime < 13 * 60) {
+        if (!isLunch) { isLunch = true; showModal('Обед', 'У вас обед с 12:00 до 13:00. Можно отдохнуть.'); }
+    } else { isLunch = false; }
+    
+    if (gameTime >= 18 * 60 && document.getElementById('app-mechanic').classList.contains('active') && simGameState === 'working') {
+        finishDay();
+    }
   }
 
-  // ================= СОСТОЯНИЕ =================
-  const START_BALANCE = 50000;
-  let balance = START_BALANCE; 
+  function startTime() {
+    if (timeInterval) clearInterval(timeInterval);
+    timeInterval = setInterval(() => {
+        if (isPaused) return;
+        gameTime++;
+        
+        if (gameTime >= 24 * 60) {
+            gameTime = 0;
+            gameDate.setDate(gameDate.getDate() + 1);
+        }
+        
+        updateClock();
+        
+        if (creditDebt > 0 && !inJail) {
+            if (Math.random() < 0.02) {
+                triggerBailiffs();
+            }
+        }
+    }, 1000);
+  }
+
+  // ================= БАЗОВОЕ СОСТОЯНИЕ =================
+  let balance = 5000; 
+  let dirtyCash = 0; 
   let chips = 0;
   const CHIP_PRICE = 1000;
+  let playerName = "";
+  let playerCity = "";
   
   let creditDebt = 0;
   let creditTotal = 0;
   let creditProgress = { 50000: 0, 100000: 0, 250000: 0, 500000: 0, 1000000: 0, 2500000: 0 }; 
-  
   const CREDIT_LEVELS = [
     { amount: 50000, label: "50 000 ₽" }, 
     { amount: 100000, label: "100 000 ₽" },
@@ -592,45 +827,751 @@
     { amount: 2500000, label: "2 500 000 ₽" }
   ];
 
+  let loanTermMonths = 1;
+  let depositAmount = 0;
+  let depositDays = 0;
+
+  // ===== СОСТОЯНИЕ СИМУЛЯТОРА =====
+  let fatigue = 0; 
+  let food = 100; 
+  let transport = 'walk'; 
+  let palyhAngry = true;
+  let currentClientSim = null;
+  let selectedSimPart = null;
+  let simGameState = 'idle'; 
+  
+  let ownedCar = null;
+  let currentCarType = 'none'; 
+  let carUpgrades = { engine: 0, suspension: 0, lights: 0, comfort: 0 };
+  let engineType = 'stock';
+
+  let isShawarmaSick = false;
+  let timurPartsFixed = 0; 
+  let currentRent = null;
+  let currentRentType = 'none'; 
+  let ownedProperties = [];
+  let usedClients = []; 
+
+  let inJail = false;
+  let jailDays = 0;
+  let drugStock = 0;
+  let extortedProperties = [];
+
+  // NPC Отношения
+  let npcs = [
+    { id: 'anya', name: 'Аня', role: 'Медсестра', avatar: '👩‍⚕️', level: 0, bonus: 'Скидка на лечение' },
+    { id: 'oleg', name: 'Олег', role: 'Водитель Пазика', avatar: '👨‍✈️', level: 0, bonus: 'Скидка на проезд' },
+    { id: 'marina', name: 'Марина', role: 'Продавщица', avatar: '👩‍🍳', level: 0, bonus: 'Бесплатная еда' }
+  ];
+
+  const simClients = [
+    { name: "Алексей", car: "ВАЗ 2107", symptoms: "Двигатель троит, потеря мощности.", brokenId: 'spark', reward: 2000 },
+    { name: "Мария", car: "Hyundai Solaris", symptoms: "При повороте ключа — тишина.", brokenId: 'battery', reward: 1500 },
+    { name: "Дмитрий", car: "Nissan Almera", symptoms: "Машина закипела, валит пар.", brokenId: 'radiator', reward: 2500 },
+    { name: "Елена", car: "ВАЗ 2114", symptoms: "Обороты плавают, глохнет.", brokenId: 'sensor', reward: 1800 },
+    { name: "Сергей", car: "Nissan X-Trail", symptoms: "Вой из-под капота, заглох.", brokenId: 'timing', reward: 3000 },
+    { name: "Тимур", car: "ВАЗ 2114", symptoms: "ВСЁ СЛОМАНО! Двигатель не заводится, генератор не дает заряд, свечи мокрые.", brokenId: 'all', reward: 15000 },
+    { name: "Василий", car: "ВАЗ 2109", symptoms: "Белый густой дым из выхлопной, уровень антифриза падает.", brokenId: 'gasket', reward: 4000 },
+    { name: "Ольга", car: "Hyundai Accent", symptoms: "Стук в двигателе, низкое давление масла.", brokenId: 'pistons', reward: 5000 },
+    { name: "Иван", car: "Nissan Qashqai", symptoms: "Машина не заводится, стартер крутит, но нет искры.", brokenId: 'ignition', reward: 2200 },
+    { name: "Аня", car: "ВАЗ 2110", symptoms: "Стук в подвеске, машина кидает.", brokenId: 'suspension', reward: 2500, npcId: 'anya' },
+    { name: "Олег", car: "ПАЗ 3205", symptoms: "Не работает свет, ночью ехать невозможно.", brokenId: 'lights', reward: 3000, npcId: 'oleg' },
+    { name: "Марина", car: "Hyundai Accent", symptoms: "Печка не греет, в салоне холодно.", brokenId: 'heater', reward: 2000, npcId: 'marina' }
+  ];
+
+  const simParts = [
+    { id: 'spark', name: 'Свечи', icon: '⚡' },
+    { id: 'timing', name: 'Ремень', icon: '⚙️' },
+    { id: 'battery', name: 'АКБ', icon: '🔋' },
+    { id: 'fuel', name: 'Насос', icon: '⛽' },
+    { id: 'radiator', name: 'Радиатор', icon: '🌡️' },
+    { id: 'sensor', name: 'Датчик', icon: '🛠️' },
+    { id: 'generator', name: 'Генератор', icon: '🔌' },
+    { id: 'gasket', name: 'Прокладка', icon: '💧' },
+    { id: 'pistons', name: 'Поршни', icon: '⚙️' },
+    { id: 'ignition', name: 'Зажигание', icon: '🔥' },
+    { id: 'suspension', name: 'Подвеска', icon: '🛞' },
+    { id: 'lights', name: 'Освещение', icon: '💡' },
+    { id: 'heater', name: 'Печка', icon: '🔥' }
+  ];
+
   function updateUI() {
-    document.querySelectorAll('.balance-val').forEach(el => {
-      el.textContent = balance.toLocaleString('ru-RU');
-    });
+    if (fatigue < 0) fatigue = 0;
+    if (fatigue > 100) fatigue = 100;
+    if (food < 0) food = 0;
+    if (food > 100) food = 100;
+
+    document.querySelectorAll('.balance-val').forEach(el => el.textContent = balance.toLocaleString('ru-RU'));
+    if(document.getElementById('dirtyCash')) document.getElementById('dirtyCash').textContent = dirtyCash.toLocaleString('ru-RU');
+    if(document.getElementById('bankMainBalance')) document.getElementById('bankMainBalance').textContent = balance.toLocaleString('ru-RU') + ' ₽';
+    if(document.getElementById('bankDirtyBalance')) document.getElementById('bankDirtyBalance').textContent = dirtyCash.toLocaleString('ru-RU') + ' ₽';
+    if(document.getElementById('fatigueVal')) document.getElementById('fatigueVal').textContent = Math.floor(fatigue);
+    if(document.getElementById('foodVal')) document.getElementById('foodVal').textContent = Math.floor(food);
+    if(document.getElementById('transportVal')) document.getElementById('transportVal').textContent = transport === 'bike' ? 'Велосипед' : (ownedCar ? ownedCar : 'Пешком');
+    if(document.getElementById('palyhMood')) document.getElementById('palyhMood').textContent = palyhAngry ? 'Злой' : 'Довольный';
+    
+    if(document.getElementById('buyTransportBtn')) {
+        document.getElementById('buyTransportBtn').style.display = (transport === 'walk' && !ownedCar && balance >= 15000) ? 'block' : 'none';
+    }
     document.getElementById('exChips').textContent = chips.toLocaleString('ru-RU');
     updateMinesUI();
     renderCreditLevels();
+    renderGarage();
+    renderRelations();
   }
 
-  function renderCreditLevels() {
-    const container = document.getElementById('creditLevels');
+  // ===== СТАРТ ИГРЫ =====
+  function startGame() {
+    const nameInput = document.getElementById('playerNameInput').value.trim();
+    const cityInput = document.getElementById('playerCityInput').value;
+    
+    if (!nameInput) return alert("Введите ваше имя!");
+    if (!cityInput) return alert("Выберите город!");
+    
+    playerName = nameInput;
+    playerCity = cityInput;
+    
+    document.getElementById('startupModal').classList.remove('show');
+    document.getElementById('greetingText').textContent = `Привет, ${playerName}! Ты переехал в город ${playerCity} и устроился механиком на СТО к Палычу.`;
+    
+    addMessage("Палыч", "Здарова, новенький. Завтра в 8 утра чтобы был как штык. Опоздаешь - вычту из зарплаты.");
+    
+    updateUI();
+    startTime();
+  }
+
+  // ===== СООБЩЕНИЯ =====
+  let messages = [];
+  function addMessage(sender, text) {
+    messages.push({ sender, text });
+    renderMessages();
+    
+    if (!document.getElementById('app-messages').classList.contains('active')) {
+        const badge = document.getElementById('msgBadge');
+        badge.style.display = 'flex';
+        badge.textContent = parseInt(badge.textContent) + 1;
+    }
+  }
+
+  function renderMessages() {
+    const container = document.getElementById('messagesList');
+    container.innerHTML = '';
+    messages.slice().reverse().forEach(msg => {
+        const el = document.createElement('div');
+        el.className = 'message-item';
+        el.innerHTML = `
+            <div class="message-avatar">${msg.sender[0]}</div>
+            <div class="message-content">
+                <div class="message-sender">${msg.sender}</div>
+                <div class="message-text">${msg.text}</div>
+            </div>
+        `;
+        container.appendChild(el);
+    });
+  }
+
+  // ===== ОТНОШЕНИЯ (NPC) =====
+  function renderRelations() {
+    const container = document.getElementById('relationsList');
+    if (!container) return;
+    container.innerHTML = '';
+
+    npcs.forEach(npc => {
+        const el = document.createElement('div');
+        el.className = 'npc-card';
+        
+        let status = 'Не знакомы';
+        if (npc.level >= 100) status = 'Друг/Девушка';
+        else if (npc.level >= 50) status = 'Приятели';
+        else if (npc.level >= 10) status = 'Знакомые';
+
+        el.innerHTML = `
+            <div class="npc-header">
+                <div class="npc-avatar">${npc.avatar}</div>
+                <div class="npc-info">
+                    <h3>${npc.name}</h3>
+                    <p>${npc.role} | ${status} (${npc.level}/100)</p>
+                </div>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width: ${npc.level}%"></div></div>
+            <div class="npc-actions">
+                <button class="npc-btn-talk" onclick="talkToNpc('${npc.id}')">Поговорить</button>
+                <button class="npc-btn-gift" onclick="giftNpc('${npc.id}')" ${balance < 500 || npc.level >= 100 ? 'disabled' : ''}>Подарок (500 ₽)</button>
+            </div>
+            <p style="font-size: 12px; margin-top: 10px; color: var(--success);">Бонус: ${npc.bonus}</p>
+        `;
+        container.appendChild(el);
+    });
+  }
+
+  function talkToNpc(id) {
+    const npc = npcs.find(n => n.id === id);
+    if (!npc) return;
+    if (fatigue >= 90) return showModal('Усталость', 'Вы слишком устали для общения.');
+    
+    fatigue += 5;
+    npc.level = Math.min(100, npc.level + 2);
+    updateUI();
+    showModal('Разговор', `Вы поговорили с ${npc.name}. Отношения улучшились.`);
+  }
+
+  function giftNpc(id) {
+    const npc = npcs.find(n => n.id === id);
+    if (!npc) return;
+    if (balance < 500) return showModal('Ошибка', 'Недостаточно денег.');
+    
+    balance -= 500;
+    npc.level = Math.min(100, npc.level + 10);
+    updateUI();
+    showModal('Подарок', `${npc.name} довольна(ен). Отношения значительно улучшились.`);
+  }
+
+  // ===== СТО (Работа) =====
+  function startDay() {
+    if (inJail) return showModal('Тюрьма', 'Вы в СИЗО. Сначала откупитесь или отсидите срок.');
+    
+    if (isShawarmaSick) {
+        isShawarmaSick = false; 
+        food -= 15;
+        if (food < 0) food = 0;
+        updateUI();
+        showModal('Проблемы с животом', 'Вы съели что-то не то вчера. Всю ночь провели в уборной и не смогли пойти на работу. День прошел зря, но вы отдохнули.');
+        return; 
+    }
+
+    document.getElementById('lifeSetup').style.display = 'none';
+    document.getElementById('workSetup').style.display = 'block';
+    
+    if (fatigue > 50) palyhAngry = true;
+    else palyhAngry = false;
+    
+    simGameState = 'working';
+    updateUI();
+  }
+
+  function takeNewClient() {
+    if (food < 10) return showModal('Голод', 'Вы слишком голодны. Сходите в магазин.');
+    
+    let fatigueFromRoad = 20; 
+    
+    if (transport === 'bike') fatigueFromRoad = 10;
+    else if (currentCarType === 'classic') fatigueFromRoad = 15;
+    else if (currentCarType === 'bad') fatigueFromRoad = 18;
+    else if (currentCarType === 'good') fatigueFromRoad = 5;
+    else if (currentCarType === 'average') fatigueFromRoad = 10;
+    
+    if (carUpgrades.suspension > 0) fatigueFromRoad -= (carUpgrades.suspension * 2);
+    if (fatigueFromRoad < 1) fatigueFromRoad = 1;
+    
+    fatigue += fatigueFromRoad;
+    
+    if (fatigue > 100) fatigue = 100;
+    updateUI();
+    
+    if (fatigue > 90) return showModal('Истощение', 'Вы слишком устали. Вам нужно поспать или поесть.');
+    
+    let availableClients = simClients.filter(c => !usedClients.includes(c.name));
+    if (availableClients.length === 0) {
+        usedClients = []; 
+        availableClients = simClients;
+    }
+    
+    const client = availableClients[Math.floor(Math.random() * availableClients.length)];
+    usedClients.push(client.name);
+    currentClientSim = client;
+    selectedSimPart = null;
+    timurPartsFixed = 0; 
+    
+    document.getElementById('clientName').textContent = `Клиент: ${client.name}`;
+    document.getElementById('clientCar').textContent = `Машина: ${client.car}`;
+    document.getElementById('clientSymptoms').textContent = `"${client.symptoms}"`;
+    
+    document.getElementById('clientOrderBox').style.display = 'block';
+    document.getElementById('takeClientBtn').style.display = 'none';
+    document.getElementById('finishDayBtn').style.display = 'none';
+    document.getElementById('mechanicResult').textContent = '';
+    document.getElementById('btnRepair').style.display = 'none';
+    
+    simGameState = 'client';
+    renderSimDiagram();
+  }
+
+  function renderSimDiagram() {
+    const container = document.getElementById('engineDiagram');
     container.innerHTML = '';
     
-    if (creditDebt > 0) {
-      document.getElementById('creditStatus').textContent = `У вас активный кредит. Осталось погасить: ${creditDebt.toLocaleString('ru-RU')} ₽.`;
-      container.style.display = 'none';
-      document.getElementById('creditActions').style.display = 'block';
-    } else {
-      document.getElementById('creditStatus').textContent = 'Выберите уровень кредита:';
-      container.style.display = 'flex';
-      document.getElementById('creditActions').style.display = 'none';
+    simParts.forEach(part => {
+      const el = document.createElement('div');
+      el.className = 'engine-part';
+      if (selectedSimPart === part.id) el.classList.add('active');
+      
+      el.innerHTML = `<span class="engine-part-icon">${part.icon}</span><span class="engine-part-name">${part.name}</span>`;
+      el.onclick = () => {
+        selectedSimPart = part.id;
+        renderSimDiagram();
+        document.getElementById('btnRepair').style.display = 'block';
+      };
+      container.appendChild(el);
+    });
+  }
 
-      CREDIT_LEVELS.forEach((level, index) => {
-        const progress = creditProgress[level.amount] || 0;
-        const isUnlocked = index === 0 || (creditProgress[CREDIT_LEVELS[index-1].amount] || 0) >= 2;
+  function diagnosePart() {
+    if (!selectedSimPart) return showModal('Ошибка', 'Выберите деталь!');
+    showModal('Диагностика', 'Вы проверили деталь. Это может быть причиной поломки.');
+    fatigue += 5; 
+    updateUI();
+  }
+
+  function repairPart() {
+    if (!selectedSimPart) return;
+    if (balance < 1000) return showModal('Ошибка', 'Нет денег на запчасть (1000 ₽)!');
+
+    if (currentClientSim.name === 'Тимур') {
+        balance -= 1000;
+        fatigue += 10;
+        timurPartsFixed++;
+        updateUI();
         
-        const btn = document.createElement('button');
-        btn.className = 'credit-level-btn';
-        btn.disabled = !isUnlocked;
-        
-        if (isUnlocked) {
-          btn.innerHTML = `Взять ${level.label} <span>Погашено: ${progress}/2</span>`;
-          btn.onclick = () => takeCredit(level.amount);
+        if (timurPartsFixed < 3) {
+            showModal('Ремонт', `Вы заменили деталь Тимуру. Прогресс: ${timurPartsFixed}/3.`);
+            selectedSimPart = null;
+            document.getElementById('btnRepair').style.display = 'none';
         } else {
-          btn.innerHTML = `🔒 ${level.label} <span>Закрыт</span>`;
+            balance += currentClientSim.reward;
+            updateUI();
+            showModal('Успех', `Вы починили Тимура! Вы получили ${currentClientSim.reward} ₽.`);
+            document.getElementById('clientOrderBox').style.display = 'none';
+            document.getElementById('takeClientBtn').style.display = 'block';
+            document.getElementById('finishDayBtn').style.display = 'block';
+            simGameState = 'working';
         }
-        container.appendChild(btn);
-      });
+        return;
     }
+
+    if (selectedSimPart === currentClientSim.brokenId) {
+      balance -= 1000; 
+      balance += currentClientSim.reward; 
+      fatigue += 10;
+      food -= 5; 
+      
+      if (currentClientSim.npcId) {
+          const npc = npcs.find(n => n.id === currentClientSim.npcId);
+          if (npc) {
+              npc.level = Math.min(100, npc.level + 20);
+              showModal('Бонус', `Вы помогли ${npc.name}. Отношения улучшились!`);
+          }
+      }
+      
+      updateUI();
+      showModal('Успех', `Машина починена! Вы получили ${currentClientSim.reward} ₽.`);
+      
+      document.getElementById('clientOrderBox').style.display = 'none';
+      document.getElementById('takeClientBtn').style.display = 'block';
+      document.getElementById('finishDayBtn').style.display = 'block';
+      simGameState = 'working';
+      
+      if (Math.random() < 0.3) {
+        palyhAngry = false;
+        showModal('Палыч', 'Палыч кивнул вам. Кажется, он вами доволен.');
+      }
+      
+    } else {
+      balance -= 1000; 
+      fatigue += 10;
+      updateUI();
+      showModal('Ошибка', 'Вы заменили не ту деталь! Клиент недоволен, вы потеряли 1000 ₽.');
+      selectedSimPart = null;
+      document.getElementById('btnRepair').style.display = 'none';
+    }
+  }
+
+  function finishDay() {
+    document.getElementById('lifeSetup').style.display = 'block';
+    document.getElementById('workSetup').style.display = 'none';
+    document.getElementById('startDayBtn').style.display = 'none'; 
+    
+    simGameState = 'idle';
+    updateUI();
+  }
+
+  // ===== ГАРАЖ =====
+  function renderGarage() {
+    const container = document.getElementById('garageContent');
+    if (!container) return;
+    if (!ownedCar) {
+        container.innerHTML = `<p style="text-align:center; color:var(--text-muted); margin-top:50px;">У вас нет машины. Купите её в Автосалоне.</p>`;
+        return;
+    }
+    
+    container.innerHTML = `
+        <h3 style="color:var(--accent); margin-bottom:10px; text-align:center;">Ваша машина: ${ownedCar}</h3>
+        
+        <div class="car-category">Замена двигателя</div>
+        <div class="shop-item">
+            <div class="shop-item-info">
+                <div class="shop-item-title">Контрактный мотор (Не оригинал)</div>
+                <div class="shop-item-desc">Дешево, но подделка. Может сломаться в любой момент.</div>
+            </div>
+            <div style="text-align:right;">
+                <div class="shop-item-price">30 000 ₽</div>
+                <button class="buy-btn" onclick="buyEngine('fake')" ${engineType === 'fake' ? 'disabled' : ''}>Купить</button>
+            </div>
+        </div>
+        <div class="shop-item">
+            <div class="shop-item-info">
+                <div class="shop-item-title">Оригинальный мотор</div>
+                <div class="shop-item-desc">Надежный, но дорогой. +5% к скорости и снижение износа.</div>
+            </div>
+            <div style="text-align:right;">
+                <div class="shop-item-price">150 000 ₽</div>
+                <button class="buy-btn" onclick="buyEngine('real')" ${engineType === 'real' ? 'disabled' : ''}>Купить</button>
+            </div>
+        </div>
+
+        <div class="car-category">Тюнинг</div>
+        <div class="shop-item">
+            <div class="shop-item-info"><div class="shop-item-title">Подвеска (Stage ${carUpgrades.suspension})</div><div class="shop-item-desc">Снижает усталость в дороге (-2% за уровень).</div></div>
+            <div style="text-align:right;"><div class="shop-item-price">${(carUpgrades.suspension+1)*15000} ₽</div><button class="buy-btn" onclick="buyUpgrade('suspension')" ${carUpgrades.suspension >= 3 ? 'disabled' : ''}>Улучшить</button></div>
+        </div>
+        <div class="shop-item">
+            <div class="shop-item-info"><div class="shop-item-title">Освещение (Stage ${carUpgrades.lights})</div><div class="shop-item-desc">Решает проблему "нихрена не видно ночью".</div></div>
+            <div style="text-align:right;"><div class="shop-item-price">${(carUpgrades.lights+1)*10000} ₽</div><button class="buy-btn" onclick="buyUpgrade('lights')" ${carUpgrades.lights >= 1 ? 'disabled' : ''}>Улучшить</button></div>
+        </div>
+        <div class="shop-item">
+            <div class="shop-item-info"><div class="shop-item-title">Комфорт (Stage ${carUpgrades.comfort})</div><div class="shop-item-desc">Кресла, климат. Дополнительное снижение усталости.</div></div>
+            <div style="text-align:right;"><div class="shop-item-price">${(carUpgrades.comfort+1)*25000} ₽</div><button class="buy-btn" onclick="buyUpgrade('comfort')" ${carUpgrades.comfort >= 2 ? 'disabled' : ''}>Улучшить</button></div>
+        </div>
+    `;
+  }
+
+  function buyEngine(type) {
+    let price = type === 'fake' ? 30000 : 150000;
+    if (balance >= price) {
+        balance -= price;
+        engineType = type;
+        updateUI();
+        showModal('Двигатель', type === 'fake' ? 'Вы поставили поддельный мотор. Надеюсь, он не развалится.' : 'Оригинальный мотор установлен. Машина поедет как новая!');
+    } else {
+        showModal('Ошибка', 'Недостаточно денег!');
+    }
+  }
+
+  function buyUpgrade(type) {
+    let price = 0;
+    if (type === 'suspension') price = (carUpgrades.suspension + 1) * 15000;
+    if (type === 'lights') price = (carUpgrades.lights + 1) * 10000;
+    if (type === 'comfort') price = (carUpgrades.comfort + 1) * 25000;
+    
+    if (balance >= price) {
+        balance -= price;
+        carUpgrades[type]++;
+        updateUI();
+        showModal('Тюнинг', 'Улучшение установлено!');
+    } else {
+        showModal('Ошибка', 'Недостаточно денег!');
+    }
+  }
+
+  // ===== ДАРКНЕТ =====
+  function switchDarknetTab(tab, btn) {
+    document.querySelectorAll('.darknet-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.darknet-list').forEach(l => l.style.display = 'none');
+    btn.classList.add('active');
+    document.getElementById(`darknet-list-${tab}`).style.display = 'block';
+  }
+
+  function buyStolenCar(name, price) {
+    if (balance >= price) {
+        balance -= price;
+        ownedCar = name;
+        currentCarType = 'stolen';
+        updateUI();
+        showModal('Даркнет', `Вы купили ${name}. Но если менты найдут...`);
+        
+        if (Math.random() < 0.3) {
+            setTimeout(() => {
+                showModal('Облава', 'Менты нашли угнанную тачку! Вас заметели. Придется решать вопрос...');
+                goToJail();
+            }, 2000);
+        }
+    } else {
+        showModal('Ошибка', 'Недостаточно денег!');
+    }
+  }
+
+  function buyDrugs(price) {
+    if (balance >= price) {
+        balance -= price;
+        drugStock += 1;
+        updateUI();
+        showModal('Даркнет', 'Вы купили опт. Надо продать.');
+    } else {
+        showModal('Ошибка', 'Недостаточно денег!');
+    }
+  }
+
+  function sellDrugs() {
+    if (drugStock > 0) {
+        dirtyCash += 150000;
+        drugStock--;
+        updateUI();
+        showModal('Даркнет', 'Вы сбыли товар. Получили 150 000 ₽ грязных денег.');
+        
+        if (Math.random() < 0.3) {
+            setTimeout(() => {
+                showModal('Облава', 'Вас взяли с поличным!');
+                goToJail();
+            }, 2000);
+        }
+    } else {
+        showModal('Ошибка', 'У вас нет товара.');
+    }
+  }
+
+  function extortProperty() {
+    dirtyCash += 50000;
+    updateUI();
+    showModal('Даркнет', 'Вы отжали хату. Получили 50 000 ₽ грязных денег.');
+    
+    if (Math.random() < 0.3) {
+        setTimeout(() => {
+            showModal('Крыша', 'Местные пришли за долей. Пришлось отдать 30 000 ₽.');
+            dirtyCash -= 30000;
+            updateUI();
+        }, 2000);
+    }
+  }
+
+  function goToJail() {
+    inJail = true;
+    jailDays = 2;
+    closeAllApps();
+    openApp('jail');
+    updateJailTimer();
+  }
+
+  function updateJailTimer() {
+    if (!inJail) return;
+    const display = document.getElementById('jailTimeDisplay');
+    if (display) display.textContent = `${jailDays} дн. (идет время...)`;
+  }
+
+  function bribeJail() {
+    if (balance >= 50000) {
+        balance -= 50000;
+        inJail = false;
+        closeApp('jail');
+        updateUI();
+        showModal('Успех', 'Вы откупились и вышли на свободу.');
+    } else {
+        showModal('Ошибка', 'Недостаточно денег для откупа!');
+    }
+  }
+
+  // ===== БАНК =====
+  function renderDeposit() {
+    const container = document.getElementById('activeDeposit');
+    if (!container) return;
+    if (depositDays > 0) {
+        container.textContent = `Вклад: ${depositAmount} ₽. Осталось дней: ${depositDays}`;
+    } else {
+        container.textContent = 'Нет активных вкладов.';
+    }
+  }
+
+  function openDeposit() {
+    const amount = parseInt(document.getElementById('depositInput').value);
+    if (!amount || amount < 1000) return showModal('Ошибка', 'Мин. сумма вклада 1000 ₽');
+    if (balance < amount) return showModal('Ошибка', 'Недостаточно денег');
+    
+    balance -= amount;
+    depositAmount = amount;
+    depositDays = 3;
+    updateUI();
+    showModal('Банк', `Вы открыли вклад на ${amount} ₽ под 10% в день.`);
+  }
+
+  function setLoanTerm(months, btn) {
+    loanTermMonths = months;
+    document.querySelectorAll('.loan-term-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCreditLevels();
+  }
+
+  function triggerBailiffs() {
+    addMessage("Приставы", "Вы не оплатили кредит вовремя! Мы списали деньги или заберем имущество.");
+    if (balance > 0) {
+        const penalty = Math.min(balance, Math.round(creditDebt * 0.1));
+        balance -= penalty;
+        showModal('Приставы', `Списали ${penalty} ₽ с вашего счета за долг.`);
+    } else if (ownedCar) {
+        ownedCar = null;
+        currentCarType = 'none';
+        showModal('Приставы', 'За долги у вас забрали машину!');
+    }
+    updateUI();
+  }
+
+  // ===== СОН =====
+  function goToSleep() {
+    if (inJail) {
+        jailDays--;
+        if (jailDays <= 0) {
+            inJail = false;
+            closeApp('jail');
+            showModal('СИЗО', 'Вы отсидели срок. Вышли на свободу.');
+        } else {
+            updateJailTimer();
+            return;
+        }
+    }
+    
+    isPaused = true;
+    let sleepTime = gameTime;
+    
+    let rentIncome = 0;
+    ownedProperties.forEach(p => rentIncome += p.income);
+    if (rentIncome > 0) balance += rentIncome;
+    if (currentRent) balance -= currentRent.cost;
+    
+    if (depositDays > 0) {
+        depositDays--;
+        if (depositDays === 0) {
+            balance += Math.floor(depositAmount * 1.3);
+            showModal('Вклад', `Вклад закрыт. Получено ${Math.floor(depositAmount * 1.3)} ₽.`);
+            depositAmount = 0;
+        }
+    }
+    
+    food -= 20;
+    if (food < 0) food = 0;
+    
+    if (currentRentType === 'bad') fatigue = 30;
+    else if (currentRentType === 'average') fatigue = 10;
+    else if (currentRentType === 'good') fatigue = 0;
+    else if (currentRentType === 'best') fatigue = 0;
+    else fatigue = 20;
+    
+    let wakeUpTime = 8 * 60; 
+    let isLate = false;
+    let latePenalty = 1000;
+    
+    if (sleepTime >= 0 && sleepTime < 6 * 60) { 
+        if (Math.random() < 0.7) { 
+            isLate = true;
+            wakeUpTime += 60; 
+            balance -= latePenalty;
+            
+            addMessage("Палыч", `Ты че, уснул там?! Я тебя жду, а тебя нет! Опоздал на час! Штраф <span>${latePenalty} ₽</span>, и чтоб больше такого не было!`);
+        }
+    }
+    
+    gameDate.setDate(gameDate.getDate() + 1);
+    gameTime = wakeUpTime;
+    isPaused = false;
+    closeApp('sleep');
+    
+    if (isLate) {
+        // Оставляем только СМС
+    } else {
+        showModal('Доброе утро', `Вы проснулись в 08:00. Пора на работу!`);
+    }
+    
+    document.getElementById('startDayBtn').style.display = 'block';
+    updateUI();
+    updateClock();
+  }
+
+  function buyTransport() {
+    if (balance >= 15000) {
+      balance -= 15000;
+      transport = 'bike';
+      updateUI();
+      showModal('Успех', 'Вы купили велосипед!');
+    }
+  }
+
+  // ===== МАГАЗИНЫ =====
+  function buyShawarma() {
+    if (balance >= 300) {
+      balance -= 300;
+      food += 30;
+      if (food > 100) food = 100;
+      
+      if (Math.random() < 0.05) {
+        isShawarmaSick = true;
+        showModal('Шаурма', 'Вы купили шаурму. Кажется, мясо было странным...');
+      } else {
+        showModal('Шаурма', 'Вы купили шаурму.');
+      }
+      updateUI();
+    } else {
+      showModal('Ошибка', 'Недостаточно денег!');
+    }
+  }
+
+  function buyFood(price, amount) {
+    if (balance >= price) {
+      balance -= price;
+      food += amount;
+      if (food > 100) food = 100;
+      updateUI();
+      showModal('Успех', `Вы купили еду. Сытость: ${food}%`);
+    } else {
+      showModal('Ошибка', 'Недостаточно денег!');
+    }
+  }
+
+  function switchCarTab(tab, btn) {
+    document.querySelectorAll('.car-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.car-list').forEach(l => l.style.display = 'none');
+    btn.classList.add('active');
+    document.getElementById(`car-list-${tab}`).style.display = 'block';
+  }
+
+  function buyCar(name, price, type) {
+    if (balance >= price) {
+      balance -= price;
+      ownedCar = name;
+      currentCarType = type;
+      carUpgrades = { engine: 0, suspension: 0, lights: 0, comfort: 0 };
+      engineType = 'stock';
+      updateUI();
+      showModal('Покупка', `Вы купили ${name}! Теперь можете прокачать её в Гараже.`);
+    } else {
+      showModal('Ошибка', 'Недостаточно денег!');
+    }
+  }
+
+  // ===== НЕДВИЖИМОСТЬ =====
+  function switchRealEstateTab(tab, btn) {
+    document.querySelectorAll('.realestate-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.realestate-list').forEach(l => l.style.display = 'none');
+    btn.classList.add('active');
+    document.getElementById(`realestate-list-${tab}`).style.display = 'block';
+  }
+
+  function rentApartment(name, cost, type) {
+    if (currentRent) return showModal('Ошибка', 'Вы уже снимаете квартиру.');
+    currentRent = { name, cost };
+    currentRentType = type;
+    showModal('Аренда', `Вы сняли ${name} за ${cost} ₽/день.`);
+  }
+
+  function buyProperty(name, price, income) {
+    if (balance >= price) {
+      balance -= price;
+      ownedProperties.push({ name, income });
+      updateUI();
+      showModal('Покупка', `Вы купили ${name}! Доход: +${income} ₽/день.`);
+    } else {
+      showModal('Ошибка', 'Недостаточно денег!');
+    }
+  }
+
+  // ===== ПРОЧИЕ ФУНКЦИИ =====
+  function changeTheme() {
+    showModal('Обои', 'Функция в разработке.');
   }
 
   function showModal(title, text) {
@@ -641,347 +1582,44 @@
   function closeModal() { document.getElementById('modal').classList.remove('show'); }
   function openResetModal() { document.getElementById('resetModal').classList.add('show'); }
   function closeResetModal() { document.getElementById('resetModal').classList.remove('show'); }
+  
   function confirmReset() {
-    balance = START_BALANCE;
-    chips = 0;
-    creditDebt = 0;
-    creditTotal = 0;
-    creditProgress = { 50000: 0, 100000: 0, 250000: 0, 500000: 0, 1000000: 0, 2500000: 0 };
-    updateUI();
-    closeResetModal();
-    showModal('Сброс', 'Прогресс успешно сброшен. Баланс: 50 000 ₽.');
+    localStorage.clear();
+    location.reload(); 
   }
 
   function openApp(id) {
     document.getElementById(`app-${id}`).classList.add('active');
+    
+    if (id === 'messages') {
+        const badge = document.getElementById('msgBadge');
+        badge.style.display = 'none';
+        badge.textContent = '0';
+        renderMessages();
+    }
+    
+    if (id === 'garage') {
+        renderGarage();
+    }
+    if (id === 'bank') {
+        renderDeposit();
+    }
+    if (id === 'relations') {
+        renderRelations();
+    }
+    
     if(id === 'mines' && !isPlayingMines) renderEmptyMinesGrid();
     if (id === 'tetris') setTimeout(initTetris, 100);
-    if (id === 'race') setTimeout(initRace, 100);
-    if (id === 'mechanic') resetMechanicApp();
+    if (id === 'roulette') drawWheel(); 
     updateUI();
   }
 
-  function closeApp(id) {
-    document.getElementById(`app-${id}`).classList.remove('active');
-    if (id === 'tetris') stopTetris();
-    if (id === 'race') stopRace();
-  }
+  function closeApp(id) { document.getElementById(`app-${id}`).classList.remove('active'); if (id === 'tetris') stopTetris(); }
+  function closeAllApps() { document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active')); stopTetris(); }
+  function goBack() { const active = document.querySelector('.app-screen.active'); if (active) { active.classList.remove('active'); const id = active.id.replace('app-', ''); if (id === 'tetris') stopTetris(); } }
 
-  function closeAllApps() {
-    document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active'));
-    stopTetris();
-    stopRace();
-  }
-
-  function goBack() {
-    const activeScreen = document.querySelector('.app-screen.active');
-    if (activeScreen) {
-      activeScreen.classList.remove('active');
-      const id = activeScreen.id.replace('app-', '');
-      if (id === 'tetris') stopTetris();
-      if (id === 'race') stopRace();
-    }
-  }
-
-  // ================= ИГРА: PlameBlocks (Тетрис) =================
-  let tetrisCtx, tetrisCanvas, tetrisInterval, tetrisBoard = [], tetrisPiece = null, tetrisScore = 0, tetrisRecord = 0, tetrisGameOver = false;
-  const TETRIS_COLS = 10, TETRIS_ROWS = 20, TETRIS_BLOCK_SIZE = 24;
-  const TETRIS_SHAPES = [[[1,1,1,1]], [[1,1],[1,1]], [[0,1,0],[1,1,1]], [[1,0,0],[1,1,1]], [[0,0,1],[1,1,1]], [[0,1,1],[1,1,0]], [[1,1,0],[0,1,1]]];
-  const TETRIS_COLORS = ['#00f0f0', '#f0f000', '#a000f0', '#0000f0', '#f0a000', '#00f000', '#f00000'];
-
-  function initTetris() {
-    tetrisCanvas = document.getElementById('tetrisCanvas');
-    tetrisCtx = tetrisCanvas.getContext('2d');
-    if(tetrisInterval) clearInterval(tetrisInterval);
-    tetrisRecord = parseInt(localStorage.getItem('tetrisRecord') || '0');
-    document.getElementById('tetrisRecord').textContent = tetrisRecord;
-    resetTetrisGame();
-    tetrisInterval = setInterval(tetrisUpdate, 500);
-  }
-  function stopTetris() { clearInterval(tetrisInterval); tetrisInterval = null; }
-  function resetTetrisGame() {
-    tetrisBoard = Array.from({ length: TETRIS_ROWS }, () => Array(TETRIS_COLS).fill(0));
-    tetrisScore = 0; tetrisGameOver = false;
-    document.getElementById('tetrisScore').textContent = tetrisScore;
-    spawnTetrisPiece(); drawTetris();
-  }
-  function spawnTetrisPiece() {
-    const typeId = Math.floor(Math.random() * TETRIS_SHAPES.length);
-    const shape = TETRIS_SHAPES[typeId];
-    tetrisPiece = { shape: shape, color: TETRIS_COLORS[typeId], x: Math.floor((TETRIS_COLS - shape[0].length) / 2), y: 0 };
-    if (checkCollision()) {
-      tetrisGameOver = true; clearInterval(tetrisInterval);
-      if (tetrisScore > tetrisRecord) {
-        tetrisRecord = tetrisScore; localStorage.setItem('tetrisRecord', tetrisRecord);
-        document.getElementById('tetrisRecord').textContent = tetrisRecord;
-      }
-      showModal('Игра окончена', 'Ваш счёт: ' + tetrisScore);
-    }
-  }
-  function checkCollision() {
-    for (let r = 0; r < tetrisPiece.shape.length; r++) {
-      for (let c = 0; c < tetrisPiece.shape[r].length; c++) {
-        if (tetrisPiece.shape[r][c]) {
-          let newX = tetrisPiece.x + c, newY = tetrisPiece.y + r;
-          if (newX < 0 || newX >= TETRIS_COLS || newY >= TETRIS_ROWS || (newY >= 0 && tetrisBoard[newY][newX])) return true;
-        }
-      }
-    }
-    return false;
-  }
-  function tetrisMove(dir) { if (tetrisGameOver || !tetrisPiece) return; tetrisPiece.x += dir; if (checkCollision()) tetrisPiece.x -= dir; drawTetris(); }
-  function tetrisRotate() {
-    if (tetrisGameOver || !tetrisPiece) return;
-    const oldShape = tetrisPiece.shape;
-    tetrisPiece.shape = oldShape[0].map((_, index) => oldShape.map(row => row[index]).reverse());
-    if (checkCollision()) tetrisPiece.shape = oldShape;
-    drawTetris();
-  }
-  function tetrisDrop() {
-    if (tetrisGameOver || !tetrisPiece) return;
-    tetrisPiece.y++;
-    if (checkCollision()) { tetrisPiece.y--; lockTetrisPiece(); spawnTetrisPiece(); }
-    drawTetris();
-  }
-  function tetrisUpdate() {
-    if (tetrisGameOver || !tetrisPiece) return;
-    tetrisPiece.y++;
-    if (checkCollision()) { tetrisPiece.y--; lockTetrisPiece(); spawnTetrisPiece(); }
-    drawTetris();
-  }
-  function lockTetrisPiece() {
-    for (let r = 0; r < tetrisPiece.shape.length; r++) {
-      for (let c = 0; c < tetrisPiece.shape[r].length; c++) {
-        if (tetrisPiece.shape[r][c]) {
-          if (tetrisPiece.y + r < 0) { tetrisGameOver = true; return; }
-          tetrisBoard[tetrisPiece.y + r][tetrisPiece.x + c] = tetrisPiece.color;
-        }
-      }
-    }
-    clearTetrisLines();
-  }
-  function clearTetrisLines() {
-    let linesCleared = 0;
-    for (let r = TETRIS_ROWS - 1; r >= 0; r--) {
-      if (tetrisBoard[r].every(cell => cell !== 0)) {
-        tetrisBoard.splice(r, 1); tetrisBoard.unshift(Array(TETRIS_COLS).fill(0));
-        linesCleared++; r++; 
-      }
-    }
-    if (linesCleared > 0) { tetrisScore += linesCleared * 100; document.getElementById('tetrisScore').textContent = tetrisScore; }
-  }
-  function drawTetris() {
-    if(!tetrisCtx) return;
-    tetrisCtx.fillStyle = '#000'; tetrisCtx.fillRect(0, 0, tetrisCanvas.width, tetrisCanvas.height);
-    tetrisCtx.strokeStyle = '#1c222e';
-    for (let i = 0; i <= TETRIS_COLS; i++) { tetrisCtx.beginPath(); tetrisCtx.moveTo(i * TETRIS_BLOCK_SIZE, 0); tetrisCtx.lineTo(i * TETRIS_BLOCK_SIZE, tetrisCanvas.height); tetrisCtx.stroke(); }
-    for (let i = 0; i <= TETRIS_ROWS; i++) { tetrisCtx.beginPath(); tetrisCtx.moveTo(0, i * TETRIS_BLOCK_SIZE); tetrisCtx.lineTo(tetrisCanvas.width, i * TETRIS_BLOCK_SIZE); tetrisCtx.stroke(); }
-    for (let r = 0; r < TETRIS_ROWS; r++) {
-      for (let c = 0; c < TETRIS_COLS; c++) {
-        if (tetrisBoard[r][c]) {
-          tetrisCtx.fillStyle = tetrisBoard[r][c];
-          tetrisCtx.fillRect(c * TETRIS_BLOCK_SIZE, r * TETRIS_BLOCK_SIZE, TETRIS_BLOCK_SIZE - 1, TETRIS_BLOCK_SIZE - 1);
-          tetrisCtx.strokeStyle = 'rgba(255,255,255,0.3)'; tetrisCtx.strokeRect(c * TETRIS_BLOCK_SIZE, r * TETRIS_BLOCK_SIZE, TETRIS_BLOCK_SIZE - 1, TETRIS_BLOCK_SIZE - 1);
-        }
-      }
-    }
-    if (tetrisPiece) {
-      tetrisCtx.fillStyle = tetrisPiece.color;
-      for (let r = 0; r < tetrisPiece.shape.length; r++) {
-        for (let c = 0; c < tetrisPiece.shape[r].length; c++) {
-          if (tetrisPiece.shape[r][c]) {
-            let x = (tetrisPiece.x + c) * TETRIS_BLOCK_SIZE, y = (tetrisPiece.y + r) * TETRIS_BLOCK_SIZE;
-            tetrisCtx.fillRect(x, y, TETRIS_BLOCK_SIZE - 1, TETRIS_BLOCK_SIZE - 1);
-            tetrisCtx.strokeStyle = 'rgba(255,255,255,0.3)'; tetrisCtx.strokeRect(x, y, TETRIS_BLOCK_SIZE - 1, TETRIS_BLOCK_SIZE - 1);
-          }
-        }
-      }
-    }
-  }
-
-  // ================= ИГРА: Drive Ace (Гонки) =================
-  let raceCtx, raceCanvas, raceInterval, racePlayer = { x: 150, y: 320, w: 40, h: 70 }, raceObstacles = [], raceScore = 0, raceSpeed = 30, raceGameOver = false, roadOffset = 0;
-
-  function initRace() {
-    raceCanvas = document.getElementById('raceCanvas');
-    const parent = raceCanvas.parentElement;
-    raceCanvas.width = parent.clientWidth; raceCanvas.height = parent.clientHeight;
-    raceCtx = raceCanvas.getContext('2d');
-    resetRaceGame();
-    if (raceInterval) clearInterval(raceInterval);
-    raceInterval = setInterval(updateRaceLogic, 1000/60);
-  }
-  function stopRace() { clearInterval(raceInterval); raceInterval = null; }
-  function resetRaceGame() {
-    raceObstacles = []; raceScore = 0; raceSpeed = 30; raceGameOver = false; roadOffset = 0;
-    racePlayer.x = raceCanvas.width / 2 - racePlayer.w / 2; racePlayer.y = raceCanvas.height - racePlayer.h - 20;
-    document.getElementById('raceScore').textContent = raceScore; document.getElementById('raceSpeed').textContent = Math.round(raceSpeed);
-    drawRace();
-  }
-  function raceMove(dir) {
-    if (raceGameOver) return;
-    racePlayer.x += dir * 25;
-    const roadLeft = raceCanvas.width * 0.15, roadRight = raceCanvas.width * 0.85;
-    if (racePlayer.x < roadLeft) racePlayer.x = roadLeft;
-    if (racePlayer.x + racePlayer.w > roadRight) racePlayer.x = roadRight - racePlayer.w;
-    drawRace();
-  }
-  function updateRaceLogic() {
-    if (raceGameOver || !raceCanvas) return;
-    if (raceSpeed < 150) raceSpeed += 0.02;
-    document.getElementById('raceSpeed').textContent = Math.round(raceSpeed);
-    roadOffset += (raceSpeed / 10); if (roadOffset > 100) roadOffset = 0;
-    if (Math.random() < 0.015 + (raceSpeed * 0.0001)) {
-      raceObstacles.push({ x: raceCanvas.width * 0.15 + Math.random() * (raceCanvas.width * 0.7 - 40), y: -100, w: 40, h: 70, color: ['#e74c3c', '#3498db', '#f1c40f'][Math.floor(Math.random()*3)] });
-    }
-    const currentMoveSpeed = (raceSpeed / 10);
-    for (let i = raceObstacles.length - 1; i >= 0; i--) {
-      let obs = raceObstacles[i]; obs.y += currentMoveSpeed;
-      if (obs.y + obs.h > racePlayer.y && obs.y < racePlayer.y + racePlayer.h && obs.x + obs.w > racePlayer.x && obs.x < racePlayer.x + racePlayer.w) {
-        raceGameOver = true; clearInterval(raceInterval); showModal('Авария!', 'Ваш счёт: ' + raceScore);
-      }
-      if (obs.y > raceCanvas.height) { raceObstacles.splice(i, 1); raceScore += 10; document.getElementById('raceScore').textContent = raceScore; }
-    }
-    drawRace();
-  }
-  function drawRace() {
-    if (!raceCtx) return;
-    raceCtx.fillStyle = '#87CEEB'; raceCtx.fillRect(0, 0, raceCanvas.width, raceCanvas.height * 0.2);
-    raceCtx.fillStyle = '#7cb342'; raceCtx.fillRect(0, raceCanvas.height * 0.2, raceCanvas.width, raceCanvas.height * 0.8);
-    raceCtx.fillStyle = '#333'; raceCtx.beginPath();
-    raceCtx.moveTo(raceCanvas.width * 0.15, raceCanvas.height); raceCtx.lineTo(raceCanvas.width * 0.25, raceCanvas.height * 0.2);
-    raceCtx.lineTo(raceCanvas.width * 0.75, raceCanvas.height * 0.2); raceCtx.lineTo(raceCanvas.width * 0.85, raceCanvas.height); raceCtx.fill();
-    raceCtx.fillStyle = '#fff';
-    for (let i = 0; i < 15; i++) {
-      let y = raceCanvas.height - (i * 60) + (roadOffset % 60);
-      let scale = (y - raceCanvas.height * 0.2) / (raceCanvas.height * 0.8);
-      if (scale > 0 && scale <= 1) { let w = 10 * scale; let x = raceCanvas.width / 2 - w / 2; raceCtx.fillRect(x, y, w, 40 * scale); }
-    }
-    raceCtx.fillStyle = '#f39c12'; raceCtx.fillRect(racePlayer.x, racePlayer.y, racePlayer.w, racePlayer.h);
-    raceCtx.fillStyle = '#000'; raceCtx.fillRect(racePlayer.x + 5, racePlayer.y + 10, racePlayer.w - 10, 15); raceCtx.fillRect(racePlayer.x + 5, racePlayer.y + 35, racePlayer.w - 10, 10);
-    raceObstacles.forEach(obs => {
-      raceCtx.fillStyle = obs.color; raceCtx.fillRect(obs.x, obs.y, obs.w, obs.h);
-      raceCtx.fillStyle = 'rgba(255,255,255,0.3)'; raceCtx.fillRect(obs.x + 5, obs.y + 5, obs.w - 10, 15);
-    });
-  }
-
-  // ================= СТО ВАЗ (ОБРАЗОВАТЕЛЬНЫЙ) =================
-  const enginePartsData = [
-    { id: 'spark', name: 'Свечи зажигания', icon: '⚡', desc: 'Отвечают за поджиг топлива. Если пробиты — двигатель "троит".' },
-    { id: 'timing', name: 'Ремень ГРМ', icon: '⚙️', desc: 'Синхронизирует коленвал и распредвал. Если порвался — клапаны гнет.' },
-    { id: 'battery', name: 'Аккумулятор', icon: '🔋', desc: 'Дает питание на стартер. Если разряжен — машина не заводится.' },
-    { id: 'fuel', name: 'Бензонасос', icon: '⛽', desc: 'Качает бензин. Если сломан — топливо не поступает.' },
-    { id: 'radiator', name: 'Радиатор', icon: '🌡️', desc: 'Охлаждает двигатель. Если забит — мотор кипит.' },
-    { id: 'sensor', name: 'Датчик ХХ', icon: '🛠️', desc: 'Регулирует холостые обороты. Если сломан — обороты плавают.' }
-  ];
-
-  let currentClient = null;
-  let selectedPart = null;
-  let mechanicGameState = 'idle';
-
-  // Расширенный список клиентов
-  const clients = [
-    { symptoms: "Двигатель троит, потеря мощности, дёргается при разгоне.", brokenId: 'spark', reward: 2000 },
-    { symptoms: "При повороте ключа — тишина. Приборная панель еле горит.", brokenId: 'battery', reward: 1500 },
-    { symptoms: "Машина закипела, из-под капота валит пар, стрелка температуры в красной зоне.", brokenId: 'radiator', reward: 2500 },
-    { symptoms: "Обороты плавают на холостом ходу, машина глохнет при сбросе газа.", brokenId: 'sensor', reward: 1800 },
-    { symptoms: "Слышен сильный вой из-под капота, двигатель заглох на ходу. Стартер крутит легко.", brokenId: 'timing', reward: 3000 },
-    { symptoms: "Машина не едет, при нажатии на газ — провал. Насос не качает.", brokenId: 'fuel', reward: 2200 },
-    { symptoms: "Двигатель работает с перебоями, особенно в сырую погоду. Из выхлопной черный дым.", brokenId: 'spark', reward: 2100 },
-    { symptoms: "После ночи на морозе не крутит стартер, щелкает реле.", brokenId: 'battery', reward: 1600 },
-    { symptoms: "Запах бензина в салоне, двигатель глохнет при остановке.", brokenId: 'fuel', reward: 2300 },
-    { symptoms: "Машина дергается при движении, стрелка тахометра скачет.", brokenId: 'sensor', reward: 1900 }
-  ];
-
-  function resetMechanicApp() {
-    document.getElementById('clientOrderBox').style.display = 'block';
-    document.getElementById('clientSymptoms').textContent = "Нажмите «Принять машину», чтобы начать диагностику.";
-    document.getElementById('mechanicGame').style.display = 'none';
-    document.getElementById('mechanicSetup').style.display = 'block';
-    document.getElementById('mechanicResult').textContent = '';
-    document.getElementById('btnRepair').style.display = 'none';
-    mechanicGameState = 'idle';
-    selectedPart = null;
-  }
-
-  document.getElementById('mechanicStartBtn').addEventListener('click', () => {
-    const client = clients[Math.floor(Math.random() * clients.length)];
-    currentClient = client;
-    
-    document.getElementById('clientSymptoms').textContent = `"${client.symptoms}"`;
-    document.getElementById('mechanicGame').style.display = 'block';
-    document.getElementById('mechanicSetup').style.display = 'none';
-    document.getElementById('btnRepair').style.display = 'none';
-    document.getElementById('mechanicResult').textContent = '';
-    
-    mechanicGameState = 'diagnosing';
-    selectedPart = null;
-    renderEngineDiagram();
-  });
-
-  function renderEngineDiagram() {
-    const container = document.getElementById('engineDiagram');
-    container.innerHTML = '';
-    
-    enginePartsData.forEach(part => {
-      const el = document.createElement('div');
-      el.className = 'engine-part';
-      if (selectedPart === part.id && mechanicGameState === 'diagnosing') el.classList.add('active');
-      if (part.id === currentClient.brokenId && mechanicGameState === 'finished') el.classList.add('broken');
-      
-      el.innerHTML = `
-        <span class="engine-part-icon">${part.icon}</span>
-        <span class="engine-part-name">${part.name}</span>
-      `;
-      
-      el.onclick = () => {
-        if (mechanicGameState !== 'diagnosing') return;
-        selectedPart = part.id;
-        renderEngineDiagram();
-        document.getElementById('btnRepair').style.display = 'block';
-        document.getElementById('mechanicResult').textContent = `Выбрано: ${part.name}`;
-      };
-      container.appendChild(el);
-    });
-  }
-
-  window.diagnosePart = () => {
-    if (mechanicGameState !== 'diagnosing' || !selectedPart) return showModal('Ошибка', 'Сначала выберите деталь на схеме!');
-    const part = enginePartsData.find(p => p.id === selectedPart);
-    showModal('Результат проверки', `${part.name}: ${part.desc}\n\nЭто похоже на причину поломки?`);
-  };
-
-  window.repairPart = () => {
-    if (mechanicGameState !== 'diagnosing' || !selectedPart) return;
-    if (balance < 1000) return showModal('Ошибка', 'У вас нет денег на замену детали (1000 ₽)!');
-
-    if (selectedPart === currentClient.brokenId) {
-      balance -= 1000;
-      balance += currentClient.reward;
-      mechanicGameState = 'finished';
-      renderEngineDiagram();
-      updateUI();
-      
-      document.getElementById('mechanicResult').textContent = `🎉 Успех! Вы нашли неисправность и получили ${currentClient.reward.toLocaleString('ru-RU')} ₽ (минус 1000 ₽ за деталь).`;
-      document.getElementById('mechanicResult').className = 'result win';
-      document.getElementById('btnRepair').style.display = 'none';
-      
-      setTimeout(() => {
-        resetMechanicApp();
-        document.getElementById('clientOrderBox').style.display = 'block';
-      }, 3000);
-      
-    } else {
-      balance -= 1000;
-      updateUI();
-      document.getElementById('mechanicResult').textContent = `❌ Это не та деталь! Вы поменяли ${enginePartsData.find(p => p.id === selectedPart).name}, но проблема осталась. -1000 ₽.`;
-      document.getElementById('mechanicResult').className = 'result lose';
-      selectedPart = null;
-      document.getElementById('btnRepair').style.display = 'none';
-    }
-  };
-
-  // ================= ОСТАЛЬНЫЕ ИГРЫ =================
+  // ===== ИГРЫ =====
+  // Угадай
   document.getElementById('guessBtn').addEventListener('click', () => {
     const bet = parseInt(document.getElementById('guessBet').value) || 0;
     const guess = parseInt(document.getElementById('guessNumber').value);
@@ -989,7 +1627,6 @@
     if (bet < 1000) return showModal('Ошибка', 'Мин. ставка 1000 ₽'); 
     if (bet > balance) return showModal('Ошибка', 'Мало денег');
     if (!guess || guess < 1 || guess > 10) return showModal('Ошибка', 'Введи число от 1 до 10');
-
     balance -= bet;
     const secret = Math.floor(Math.random() * 10) + 1;
     if (guess === secret) {
@@ -1001,245 +1638,17 @@
     updateUI();
   });
 
-  const wheelNumbers = [
-    {n: 0, c: 'green'}, {n: 28, c: 'black'}, {n: 9, c: 'red'}, {n: 26, c: 'black'}, {n: 30, c: 'red'}, {n: 11, c: 'black'}, {n: 7, c: 'red'}, {n: 20, c: 'black'}, {n: 32, c: 'red'}, {n: 17, c: 'black'}, {n: 5, c: 'red'}, {n: 22, c: 'black'}, {n: 34, c: 'red'}, {n: 15, c: 'black'}, {n: 3, c: 'red'}, {n: 24, c: 'black'}, {n: 36, c: 'red'}, {n: 13, c: 'black'}, {n: 1, c: 'red'}, {n: '00', c: 'green'}, {n: 27, c: 'red'}, {n: 10, c: 'black'}, {n: 25, c: 'red'}, {n: 29, c: 'black'}, {n: 12, c: 'red'}, {n: 8, c: 'black'}, {n: 19, c: 'red'}, {n: 31, c: 'black'}, {n: 18, c: 'red'}, {n: 6, c: 'black'}, {n: 21, c: 'red'}, {n: 33, c: 'black'}, {n: 16, c: 'red'}, {n: 4, c: 'black'}, {n: 23, c: 'red'}, {n: 35, c: 'black'}, {n: 14, c: 'red'}, {n: 2, c: 'black'}
-  ];
-
-  function drawWheel() {
-    const canvas = document.getElementById('rouletteCanvas');
-    const ctx = canvas.getContext('2d');
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = Math.min(centerX, centerY) - 2;
-    const angleStep = (2 * Math.PI) / wheelNumbers.length;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    wheelNumbers.forEach((item, i) => {
-      const startAngle = i * angleStep - Math.PI / 2 - angleStep / 2;
-      const endAngle = (i + 1) * angleStep - Math.PI / 2 - angleStep / 2;
-
-      ctx.beginPath();
-      ctx.moveTo(centerX, centerY);
-      ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-      ctx.closePath();
-
-      if (item.c === 'red') ctx.fillStyle = '#c0392b';
-      else if (item.c === 'black') ctx.fillStyle = '#1a1a1a';
-      else ctx.fillStyle = '#27ae60';
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      ctx.save();
-      ctx.translate(centerX, centerY);
-      ctx.rotate(startAngle + angleStep / 2);
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 9px Arial';
-      ctx.fillText(item.n, radius - 12, 0);
-      ctx.restore();
-    });
-  }
-
-  let currentChip = 1;
-  let bets = {}; 
-  let isSpinning = false;
-
-  function addChipToCell(cellElement, id) {
-    if (isSpinning) return;
-    if (chips < currentChip) return showModal('Ошибка', 'Недостаточно фишек!');
-    
-    chips -= currentChip;
-    updateUI();
-    bets[id] = (bets[id] || 0) + currentChip;
-
-    let chip = cellElement.querySelector('.chip-on-table');
-    if (!chip) {
-      chip = document.createElement('div');
-      chip.className = 'chip-on-table';
-      cellElement.style.position = 'relative';
-      cellElement.appendChild(chip);
-    }
-    chip.textContent = bets[id];
-    
-    if (currentChip === 1) chip.style.background = '#e74c3c';
-    else if (currentChip === 5) chip.style.background = '#8e44ad';
-    else chip.style.background = '#2980b9';
-  }
-
-  const grid = document.getElementById('bettingGrid');
-
-  let cell0 = document.createElement('div'); 
-  cell0.className = 'cell green-num'; 
-  cell0.style.gridColumn = '1'; cell0.style.gridRow = '1 / span 3'; cell0.style.height = 'auto';
-  cell0.textContent = '0';
-  cell0.onclick = () => addChipToCell(cell0, '0'); 
-  grid.appendChild(cell0);
-
-  let cell00 = document.createElement('div'); 
-  cell00.className = 'cell green-num'; 
-  cell00.style.gridColumn = '1'; cell00.style.gridRow = '4 / span 3'; cell00.style.height = 'auto';
-  cell00.textContent = '00';
-  cell00.onclick = () => addChipToCell(cell00, '00'); 
-  grid.appendChild(cell00);
-
-  for (let row = 0; row < 3; row++) {
-    for (let col = 0; col < 12; col++) {
-      let num = col * 3 + row + 1;
-      let isRed = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(num);
-      let cell = document.createElement('div');
-      cell.className = `cell ${isRed ? 'red-num' : 'black-num'}`;
-      cell.style.gridColumn = col + 2; cell.style.gridRow = row + 1;
-      cell.textContent = num;
-      cell.onclick = () => addChipToCell(cell, num.toString());
-      grid.appendChild(cell);
-    }
-  }
-
-  for (let row = 0; row < 3; row++) {
-    let cell = document.createElement('div'); 
-    cell.className = 'cell outside';
-    cell.style.gridColumn = '14'; cell.style.gridRow = row + 1;
-    cell.textContent = '2:1';
-    let colType = row === 0 ? 'col1' : row === 1 ? 'col2' : 'col3';
-    cell.onclick = () => addChipToCell(cell, colType); 
-    grid.appendChild(cell);
-  }
-
-  let dz1 = document.createElement('div'); dz1.className = 'cell outside'; dz1.style.gridColumn = '2 / span 4'; dz1.style.gridRow = '4'; dz1.textContent = '1st 12'; dz1.onclick = () => addChipToCell(dz1, 'dozen1'); grid.appendChild(dz1);
-  let dz2 = document.createElement('div'); dz2.className = 'cell outside'; dz2.style.gridColumn = '6 / span 4'; dz2.style.gridRow = '4'; dz2.textContent = '2nd 12'; dz2.onclick = () => addChipToCell(dz2, 'dozen2'); grid.appendChild(dz2);
-  let dz3 = document.createElement('div'); dz3.className = 'cell outside'; dz3.style.gridColumn = '10 / span 4'; dz3.style.gridRow = '4'; dz3.textContent = '3rd 12'; dz3.onclick = () => addChipToCell(dz3, 'dozen3'); grid.appendChild(dz3);
-
-  let low = document.createElement('div'); low.className = 'cell outside'; low.style.gridColumn = '2 / span 2'; low.style.gridRow = '5'; low.textContent = '1-18'; low.onclick = () => addChipToCell(low, 'low'); grid.appendChild(low);
-  let even = document.createElement('div'); even.className = 'cell outside'; even.style.gridColumn = '4 / span 2'; even.style.gridRow = '5'; even.textContent = 'EVEN'; even.onclick = () => addChipToCell(even, 'even'); grid.appendChild(even);
-  let red = document.createElement('div'); red.className = 'cell outside'; red.style.gridColumn = '6 / span 2'; red.style.gridRow = '5'; red.textContent = '🔴'; red.onclick = () => addChipToCell(red, 'red'); grid.appendChild(red);
-  let black = document.createElement('div'); black.className = 'cell outside'; black.style.gridColumn = '8 / span 2'; black.style.gridRow = '5'; black.textContent = '⚫'; black.onclick = () => addChipToCell(black, 'black'); grid.appendChild(black);
-  let odd = document.createElement('div'); odd.className = 'cell outside'; odd.style.gridColumn = '10 / span 2'; odd.style.gridRow = '5'; odd.textContent = 'ODD'; odd.onclick = () => addChipToCell(odd, 'odd'); grid.appendChild(odd);
-  let high = document.createElement('div'); high.className = 'cell outside'; high.style.gridColumn = '12 / span 2'; high.style.gridRow = '5'; high.textContent = '19-36'; high.onclick = () => addChipToCell(high, 'high'); grid.appendChild(high);
-
-  document.querySelectorAll('.chip-btn').forEach(btn => {
-    btn.onclick = () => {
-      if (isSpinning) return;
-      document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentChip = parseInt(btn.dataset.val);
-    };
-  });
-
-  document.getElementById('clearBetsBtn').onclick = () => {
-    if (isSpinning) return;
-    let totalRefund = 0;
-    for (let id in bets) totalRefund += bets[id];
-    chips += totalRefund; updateUI();
-    document.querySelectorAll('.chip-on-table').forEach(c => c.remove());
-    bets = {};
-    document.getElementById('rouletteResult').textContent = '';
-  };
-
-  document.getElementById('sellChipsBtn').onclick = () => {
-    if (chips < 1) return showModal('Ошибка', 'У тебя нет фишек!');
-    balance += chips * CHIP_PRICE;
-    chips = 0;
-    updateUI();
-  };
-
-  document.querySelectorAll('.exchange-box .btn-red, .exchange-box .btn-purple, .exchange-box .btn-blue').forEach(btn => {
-    btn.onclick = () => {
-      const amount = parseInt(btn.dataset.val);
-      const cost = amount * CHIP_PRICE;
-      if (balance < cost) return showModal('Ошибка', `Нужно ${cost.toLocaleString('ru-RU')} ₽`);
-      balance -= cost;
-      chips += amount;
-      updateUI();
-    };
-  });
-
-  document.getElementById('spinRouletteBtn').onclick = () => {
-    if (isSpinning) return;
-    let totalBet = 0;
-    for (let id in bets) totalBet += bets[id];
-    if (totalBet === 0) return showModal('Ошибка', 'Сделайте хотя бы одну ставку!');
-
-    isSpinning = true;
-    document.getElementById('rouletteResult').textContent = 'Крутим...';
-    document.getElementById('rouletteResult').className = 'result';
-    document.getElementById('wheelCenter').textContent = '...';
-
-    const winIndex = Math.floor(Math.random() * wheelNumbers.length);
-    const winItem = wheelNumbers[winIndex];
-    
-    const angleStep = 360 / wheelNumbers.length;
-    const targetAngle = (360 * 5) - (winIndex * angleStep); 
-    
-    const wheel = document.getElementById('rouletteCanvas');
-    let currentRotation = parseFloat(wheel.style.transform.replace('rotate(', '').replace('deg)', '')) || 0;
-    
-    wheel.style.transform = `rotate(${currentRotation + targetAngle}deg)`;
-
-    setTimeout(() => {
-      isSpinning = false;
-      let winAmount = 0;
-      const num = winItem.n;
-      const color = winItem.c;
-
-      document.getElementById('wheelCenter').textContent = num;
-
-      for (let id in bets) {
-        const betAmt = bets[id];
-        let isWin = false, mult = 1;
-
-        if (id === num.toString()) { isWin = true; mult = 35; } 
-        else if (id === 'red' && color === 'red') { isWin = true; mult = 2; }
-        else if (id === 'black' && color === 'black') { isWin = true; mult = 2; }
-        else if (id === 'even' && num !== 0 && num !== '00' && num % 2 === 0) { isWin = true; mult = 2; }
-        else if (id === 'odd' && num !== 0 && num !== '00' && num % 2 !== 0) { isWin = true; mult = 2; }
-        else if (id === 'low' && num >= 1 && num <= 18) { isWin = true; mult = 2; }
-        else if (id === 'high' && num >= 19 && num <= 36) { isWin = true; mult = 2; }
-        else if (id.startsWith('dozen')) {
-          let d = parseInt(id.replace('dozen', ''));
-          if (num >= (d-1)*12 + 1 && num <= d*12) { isWin = true; mult = 3; }
-        }
-        else if (id.startsWith('col')) {
-          let c = parseInt(id.replace('col', ''));
-          if (num % 3 === (c % 3)) { isWin = true; mult = 3; }
-        }
-
-        if (isWin) winAmount += betAmt * mult;
-      }
-
-      if (winAmount > 0) {
-        chips += winAmount;
-        document.getElementById('rouletteResult').textContent = `🎉 Выигрыш! Выпало ${num}. +${winAmount} фишек`;
-        document.getElementById('rouletteResult').className = 'result win';
-      } else {
-        document.getElementById('rouletteResult').textContent = `❌ Проигрыш. Выпало ${num}.`;
-        document.getElementById('rouletteResult').className = 'result lose';
-      }
-      updateUI();
-      
-      document.querySelectorAll('.chip-on-table').forEach(c => c.remove());
-      bets = {}; 
-      
-    }, 4500); 
-  };
-
-  drawWheel();
-
+  // Слоты
   const symbols = ['🍒', '🍋', '⭐', '💎', '🔔', '🍀'];
   document.getElementById('slotsBtn').addEventListener('click', () => {
     const bet = parseInt(document.getElementById('slotsBet').value) || 0;
     const res = document.getElementById('slotsResult');
     if (bet < 1000) return showModal('Ошибка', 'Мин. ставка 1000 ₽'); 
     if (bet > balance) return showModal('Ошибка', 'Мало денег');
-    
     balance -= bet; updateUI();
     const slots = [0, 1, 2].map(i => document.getElementById('slot' + i));
     slots.forEach(s => s.classList.add('spin'));
     document.getElementById('slotsBtn').disabled = true;
-
     let ticks = 0;
     const interval = setInterval(() => {
       slots.forEach(s => s.textContent = symbols[Math.floor(Math.random() * symbols.length)]);
@@ -1248,7 +1657,6 @@
         clearInterval(interval);
         slots.forEach(s => s.classList.remove('spin'));
         document.getElementById('slotsBtn').disabled = false;
-
         const result = slots.map(s => s.textContent);
         if (result[0] === result[1] && result[1] === result[2]) {
           const win = bet * 10; balance += win;
@@ -1264,27 +1672,37 @@
     }, 100);
   });
 
-  // ================= БАНК =================
-  window.takeCredit = (amount) => {
-    if (creditDebt > 0) return showModal('Ошибка', 'У вас уже есть активный кредит');
-    creditTotal = amount; creditDebt = Math.round(amount * 1.35); balance += amount; updateUI();
-    showModal('Успех', `Кредит на ${amount.toLocaleString('ru-RU')} ₽ одобрен! К возврату: ${creditDebt.toLocaleString('ru-RU')} ₽`);
-  };
-  window.payCredit = () => {
-    if (balance < creditDebt) return showModal('Ошибка', 'Недостаточно средств для погашения');
-    balance -= creditDebt; creditProgress[creditTotal] = (creditProgress[creditTotal] || 0) + 1;
-    creditDebt = 0; creditTotal = 0; updateUI();
-    showModal('Успех', 'Кредит полностью погашен! Уровень прогресса увеличен.');
-  };
-  window.takeMicroLoan = () => {
-    const amount = 10000; balance += amount; updateUI();
-    showModal('Успех', `Микрозайм на ${amount.toLocaleString('ru-RU')} ₽ зачислен. Не забудьте вернуть 10 700 ₽!`);
-  };
+  // Рулетка
+  const wheelNumbers = [ {n: 0, c: 'green'}, {n: 28, c: 'black'}, {n: 9, c: 'red'}, {n: 26, c: 'black'}, {n: 30, c: 'red'}, {n: 11, c: 'black'}, {n: 7, c: 'red'}, {n: 20, c: 'black'}, {n: 32, c: 'red'}, {n: 17, c: 'black'}, {n: 5, c: 'red'}, {n: 22, c: 'black'}, {n: 34, c: 'red'}, {n: 15, c: 'black'}, {n: 3, c: 'red'}, {n: 24, c: 'black'}, {n: 36, c: 'red'}, {n: 13, c: 'black'}, {n: 1, c: 'red'}, {n: '00', c: 'green'}, {n: 27, c: 'red'}, {n: 10, c: 'black'}, {n: 25, c: 'red'}, {n: 29, c: 'black'}, {n: 12, c: 'red'}, {n: 8, c: 'black'}, {n: 19, c: 'red'}, {n: 31, c: 'black'}, {n: 18, c: 'red'}, {n: 6, c: 'black'}, {n: 21, c: 'red'}, {n: 33, c: 'black'}, {n: 16, c: 'red'}, {n: 4, c: 'black'}, {n: 23, c: 'red'}, {n: 35, c: 'black'}, {n: 14, c: 'red'}, {n: 2, c: 'black'} ];
+  function drawWheel() { const canvas = document.getElementById('rouletteCanvas'); const ctx = canvas.getContext('2d'); const cx = canvas.width / 2; const cy = canvas.height / 2; const r = Math.min(cx, cy) - 2; const step = (2 * Math.PI) / wheelNumbers.length; ctx.clearRect(0, 0, canvas.width, canvas.height); wheelNumbers.forEach((item, i) => { const start = i * step - Math.PI / 2 - step / 2; const end = (i + 1) * step - Math.PI / 2 - step / 2; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, start, end); ctx.closePath(); ctx.fillStyle = item.c === 'red' ? '#c0392b' : (item.c === 'black' ? '#1a1a1a' : '#27ae60'); ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.stroke(); ctx.save(); ctx.translate(cx, cy); ctx.rotate(start + step / 2); ctx.fillStyle = '#fff'; ctx.font = 'bold 10px Arial'; ctx.textAlign = 'center'; ctx.fillText(item.n, r - 12, 0); ctx.restore(); }); }
+  let currentChip = 1; let bets = {}; let isSpinning = false;
+  function addChipToCell(cell, id) { if (isSpinning) return; if (chips < currentChip) return showModal('Ошибка', 'Мало фишек!'); chips -= currentChip; updateUI(); bets[id] = (bets[id] || 0) + currentChip; let chip = cell.querySelector('.chip-on-table'); if (!chip) { chip = document.createElement('div'); chip.className = 'chip-on-table'; cell.appendChild(chip); } chip.textContent = bets[id]; }
+  const grid = document.getElementById('bettingGrid');
+  let cell0 = document.createElement('div'); cell0.className = 'cell green-num'; cell0.style.gridColumn = '1'; cell0.style.gridRow = '1 / span 3'; cell0.textContent = '0'; cell0.onclick = () => addChipToCell(cell0, '0'); grid.appendChild(cell0);
+  let cell00 = document.createElement('div'); cell00.className = 'cell green-num'; cell00.style.gridColumn = '1'; cell00.style.gridRow = '4 / span 3'; cell00.textContent = '00'; cell00.onclick = () => addChipToCell(cell00, '00'); grid.appendChild(cell00);
+  for (let row = 0; row < 3; row++) { for (let col = 0; col < 12; col++) { let num = col * 3 + row + 1; let isRed = [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(num); let cell = document.createElement('div'); cell.className = `cell ${isRed ? 'red-num' : 'black-num'}`; cell.style.gridColumn = col + 2; cell.style.gridRow = row + 1; cell.textContent = num; cell.onclick = () => addChipToCell(cell, num.toString()); grid.appendChild(cell); } }
+  for (let row = 0; row < 3; row++) { let cell = document.createElement('div'); cell.className = 'cell outside'; cell.style.gridColumn = '14'; cell.style.gridRow = row + 1; cell.textContent = '2:1'; let type = row === 0 ? 'col1' : row === 1 ? 'col2' : 'col3'; cell.onclick = () => addChipToCell(cell, type); grid.appendChild(cell); }
+  document.getElementById('clearBetsBtn').onclick = () => { if (isSpinning) return; let ref = 0; for (let id in bets) ref += bets[id]; chips += ref; updateUI(); document.querySelectorAll('.chip-on-table').forEach(c => c.remove()); bets = {}; };
+  document.getElementById('sellChipsBtn').onclick = () => { if (chips < 1) return; balance += chips * CHIP_PRICE; chips = 0; updateUI(); };
+  document.querySelectorAll('.exchange-box button').forEach(btn => { if(btn.dataset.val) btn.onclick = () => { const amount = parseInt(btn.dataset.val); const cost = amount * CHIP_PRICE; if (balance < cost) return showModal('Ошибка', 'Мало денег'); balance -= cost; chips += amount; updateUI(); }; });
+  document.getElementById('spinRouletteBtn').onclick = () => { if (isSpinning) return; let total = 0; for (let id in bets) total += bets[id]; if (total === 0) return showModal('Ошибка', 'Нет ставок'); isSpinning = true; const winIndex = Math.floor(Math.random() * wheelNumbers.length); const winItem = wheelNumbers[winIndex]; const wheel = document.getElementById('rouletteCanvas'); let rot = parseFloat(wheel.style.transform.replace('rotate(', '').replace('deg)', '')) || 0; wheel.style.transform = `rotate(${rot + 1800 - (winIndex * (360/wheelNumbers.length))}deg)`; setTimeout(() => { isSpinning = false; let winAmount = 0; for (let id in bets) { if (id === winItem.n.toString()) winAmount += bets[id] * 35; else if (id === 'red' && winItem.c === 'red') winAmount += bets[id] * 2; else if (id === 'black' && winItem.c === 'black') winAmount += bets[id] * 2; } chips += winAmount; showModal('Рулетка', winAmount > 0 ? `Выигрыш! +${winAmount} фишек` : 'Проигрыш.'); updateUI(); document.querySelectorAll('.chip-on-table').forEach(c => c.remove()); bets = {}; }, 4500); };
 
-  // ================= КАЛЕНДАРЬ =================
-  let currentDate = new Date();
+  // Мины
+  let minesBet = 1000; let minesCount = 3; let isPlayingMines = false; let mineGridArray = []; let currentGems = 0; let currentMult = 1.0;
+  function renderEmptyMinesGrid() { const g = document.getElementById('minesGrid'); g.innerHTML = ''; for (let i = 0; i < 25; i++) { const c = document.createElement('div'); c.className = 'mine-cell-new'; g.appendChild(c); } }
+  function updateMinesUI() { if(document.getElementById('minesBetDisplay')) document.getElementById('minesBetDisplay').textContent = minesBet.toLocaleString('ru-RU') + ' ₽'; if(document.getElementById('minesCountDisplay')) document.getElementById('minesCountDisplay').textContent = minesCount; }
+  function startMines() { if (balance < minesBet) return showModal('Ошибка', 'Мало денег'); balance -= minesBet; isPlayingMines = true; currentGems = 0; currentMult = 1.0; mineGridArray = new Array(25).fill(false); let placed = 0; while (placed < minesCount) { let idx = Math.floor(Math.random() * 25); if (!mineGridArray[idx]) { mineGridArray[idx] = true; placed++; } } const g = document.getElementById('minesGrid'); g.innerHTML = ''; for (let i = 0; i < 25; i++) { const c = document.createElement('div'); c.className = 'mine-cell-new'; c.onclick = () => clickMineCell(i, c); g.appendChild(c); } updateUI(); }
+  function clickMineCell(i, c) { if (!isPlayingMines) return; c.classList.add('revealed'); if (mineGridArray[i]) { c.textContent = '💥'; isPlayingMines = false; showModal('БУМ', 'Вы проиграли'); } else { c.textContent = '💎'; currentGems++; currentMult = currentMult * (25 - currentGems) / (25 - minesCount); } }
+  function cashoutMines() { if (!isPlayingMines) return; const win = Math.floor(minesBet * currentMult); balance += win; isPlayingMines = false; showModal('Выигрыш', `Забрано ${win} ₽`); renderEmptyMinesGrid(); updateUI(); }
+
+  // Банк
+  function renderCreditLevels() { const container = document.getElementById('creditLevels'); if(!container) return; container.innerHTML = ''; if (creditDebt > 0) { document.getElementById('creditStatus').textContent = `Долг: ${creditDebt} ₽`; container.style.display = 'none'; document.getElementById('creditActions').style.display = 'block'; } else { container.style.display = 'flex'; document.getElementById('creditActions').style.display = 'none'; CREDIT_LEVELS.forEach((lvl, i) => { const btn = document.createElement('button'); btn.className = 'credit-level-btn'; const unlocked = i === 0 || (creditProgress[CREDIT_LEVELS[i-1].amount] || 0) >= 1; btn.disabled = !unlocked; btn.innerHTML = unlocked ? `Взять ${lvl.label} <span>Погашено: ${creditProgress[lvl.amount] || 0}</span>` : `🔒 ${lvl.label}`; if(unlocked) btn.onclick = () => takeCredit(lvl.amount); container.appendChild(btn); }); } }
+  function takeCredit(amount) { if (creditDebt > 0) return; creditTotal = amount; creditDebt = Math.round(amount * (1.1 + loanTermMonths * 0.05)); balance += amount; updateUI(); showModal('Успех', `Кредит ${amount} ₽ выдан на ${loanTermMonths} мес! К возврату: ${creditDebt} ₽`); }
+  function payCredit() { if (balance < creditDebt) return showModal('Ошибка', 'Мало денег'); balance -= creditDebt; creditProgress[creditTotal] = (creditProgress[creditTotal] || 0) + 1; creditDebt = 0; creditTotal = 0; updateUI(); showModal('Успех', 'Кредит погашен!'); }
+  
+  // Календарь
   function renderCalendar() {
-    const year = currentDate.getFullYear(); const month = currentDate.getMonth();
+    const year = gameDate.getFullYear(); const month = gameDate.getMonth();
     const firstDay = new Date(year, month, 1); const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate(); let startDay = firstDay.getDay();
     if (startDay === 0) startDay = 6; else startDay -= 1;
@@ -1294,97 +1712,29 @@
     const dayNames = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
     dayNames.forEach(name => { const d = document.createElement('div'); d.className = 'calendar-day-name'; d.textContent = name; grid.appendChild(d); });
     for (let i = 0; i < startDay; i++) { const d = document.createElement('div'); d.className = 'calendar-day other-month'; grid.appendChild(d); }
-    const today = new Date();
+    
     for (let i = 1; i <= daysInMonth; i++) {
       const d = document.createElement('div'); d.className = 'calendar-day'; d.textContent = i;
-      if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) d.classList.add('today');
+      if (i === gameDate.getDate()) d.classList.add('today');
       grid.appendChild(d);
     }
   }
-  document.getElementById('prevMonth').onclick = () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); };
-  document.getElementById('nextMonth').onclick = () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); };
+  document.getElementById('prevMonth').onclick = () => { gameDate.setMonth(gameDate.getMonth() - 1); renderCalendar(); };
+  document.getElementById('nextMonth').onclick = () => { gameDate.setMonth(gameDate.getMonth() + 1); renderCalendar(); };
   renderCalendar();
 
-  // ================= ИГРА МИНЫ =================
-  let minesBet = 1000; let minesCount = 3; let isPlayingMines = false; let mineGridArray = []; let currentGems = 0; let currentMult = 1.0;
+  // Тетрис
+  let tetrisCtx, tetrisCanvas, tetrisInterval, tetrisBoard = [], tetrisPiece = null, tetrisScore = 0, tetrisGameOver = false;
+  function initTetris() { tetrisCanvas = document.getElementById('tetrisCanvas'); if(!tetrisCanvas) return; tetrisCtx = tetrisCanvas.getContext('2d'); if(tetrisInterval) clearInterval(tetrisInterval); tetrisInterval = setInterval(tetrisUpdate, 500); }
+  function stopTetris() { clearInterval(tetrisInterval); }
+  function tetrisUpdate() { if(tetrisGameOver) return; }
+  function tetrisMove(d) {} function tetrisRotate() {} function tetrisDrop() {}
 
-  function renderEmptyMinesGrid() {
-    const grid = document.getElementById('minesGrid'); grid.innerHTML = '';
-    for (let i = 0; i < 25; i++) { const cell = document.createElement('div'); cell.className = 'mine-cell-new'; grid.appendChild(cell); }
-  }
-  function setMinesBet(amount) { if (isPlayingMines) return; if (amount === 'max') { minesBet = Math.floor(balance / 1000) * 1000; if(minesBet < 1000) minesBet = 1000; } else { minesBet = amount; } updateMinesUI(); }
-  function changeMinesBet(delta) { if (isPlayingMines) return; minesBet += delta; if (minesBet < 1000) minesBet = 1000; updateMinesUI(); }
-  function setMinesCount(count) { if (isPlayingMines) return; minesCount = count; if (minesCount < 1) minesCount = 1; if (minesCount > 24) minesCount = 24; updateMinesUI(); }
-  function changeMinesCount(delta) { if (isPlayingMines) return; setMinesCount(minesCount + delta); }
-  function calculateNextMultiplier(gemsFound, mines) {
-    let mult = 1; const total = 25;
-    for (let i = 0; i < gemsFound; i++) mult *= (total - i) / (total - mines - i);
-    return mult * 0.97;
-  }
-  function updateMinesUI() {
-    document.getElementById('minesBetDisplay').textContent = minesBet.toLocaleString('ru-RU') + ' ₽';
-    document.querySelectorAll('.quick-bets-row .quick-btn').forEach(b => {
-      b.classList.remove('active');
-      if (b.textContent.trim() === '100' && minesBet === 100) b.classList.add('active');
-      if (b.textContent.trim() === '1 000' && minesBet === 1000) b.classList.add('active');
-      if (b.textContent.trim() === '10 000' && minesBet === 10000) b.classList.add('active');
-    });
-    document.getElementById('minesCountDisplay').textContent = minesCount;
-    document.querySelectorAll('.mines-options-row .mine-opt-btn').forEach(b => {
-      b.classList.remove('active');
-      if (parseInt(b.textContent) === minesCount) b.classList.add('active');
-    });
-    const btn = document.getElementById('minesStartBtn');
-    btn.textContent = `Играть за ${minesBet.toLocaleString('ru-RU')} ₽`;
-    btn.style.display = isPlayingMines ? 'none' : 'block';
-    document.getElementById('minesCashoutBtn').style.display = isPlayingMines ? 'block' : 'none';
-    if (isPlayingMines) {
-      document.getElementById('minesCurrentMult').textContent = '×' + currentMult.toFixed(2);
-      const nextM = calculateNextMultiplier(currentGems + 1, minesCount);
-      document.getElementById('minesNextMult').textContent = '×' + nextM.toFixed(2);
-      const chance = Math.round(((25 - minesCount - currentGems) / (25 - currentGems)) * 100);
-      document.getElementById('minesChance').textContent = chance + ' %';
-    } else {
-      document.getElementById('minesCurrentMult').textContent = '—';
-      const nextM = calculateNextMultiplier(1, minesCount);
-      document.getElementById('minesNextMult').textContent = '×' + nextM.toFixed(2);
-      const chance = Math.round(((25 - minesCount) / 25) * 100);
-      document.getElementById('minesChance').textContent = chance + ' %';
-    }
-    if (isPlayingMines) {
-      const win = Math.floor(minesBet * currentMult);
-      document.getElementById('minesCashoutBtn').textContent = `Забрать ${win.toLocaleString('ru-RU')} ₽`;
-    }
-  }
-  function startMines() {
-    if (balance < minesBet) return showModal('Ошибка', 'Мало денег!');
-    balance -= minesBet; isPlayingMines = true; currentGems = 0; currentMult = 1.0;
-    mineGridArray = new Array(25).fill(false); let placed = 0;
-    while (placed < minesCount) { let idx = Math.floor(Math.random() * 25); if (!mineGridArray[idx]) { mineGridArray[idx] = true; placed++; } }
-    const grid = document.getElementById('minesGrid'); grid.innerHTML = '';
-    for (let i = 0; i < 25; i++) { const cell = document.createElement('div'); cell.className = 'mine-cell-new'; cell.onclick = () => clickMineCell(i, cell); grid.appendChild(cell); }
-    updateUI();
-  }
-  function clickMineCell(index, cell) {
-    if (!isPlayingMines || cell.classList.contains('revealed')) return;
-    cell.classList.add('revealed');
-    if (mineGridArray[index]) {
-      cell.textContent = '💥'; cell.classList.add('bomb'); isPlayingMines = false;
-      document.querySelectorAll('.mine-cell-new').forEach((c, i) => { if (mineGridArray[i] && !c.classList.contains('revealed')) { c.textContent = '💣'; c.style.opacity = '0.5'; } });
-      showModal('БУМ!', `Вы подорвались. Потеряно ${minesBet.toLocaleString('ru-RU')} ₽`); updateUI();
-    } else {
-      cell.textContent = '💎'; cell.classList.add('gem'); currentGems++; currentMult = calculateNextMultiplier(currentGems, minesCount); updateUI();
-    }
-  }
-  function cashoutMines() {
-    if (!isPlayingMines) return;
-    const win = Math.floor(minesBet * currentMult); balance += win; isPlayingMines = false;
-    showModal('Победа!', `Вы забрали ${win.toLocaleString('ru-RU')} ₽`); renderEmptyMinesGrid(); updateUI();
-  }
-
-  // Инициализация при старте
-  renderEmptyMinesGrid();
+  // Инициализация
   updateUI();
+  drawWheel();
+  renderEmptyMinesGrid();
+  updateClock();
 
 </script>
 </body>
